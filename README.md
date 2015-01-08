@@ -14,5 +14,12 @@ Verilog貪吃蛇
 + .ucf為接線配置檔
     + 上下左右控制蛇身
     + 中鍵為RESET
+
 ### Screen Shot
 + coming soon
+
+### Cowokers
++ Ellis Teng
++ SenDing Huang
++ Yujun Wang
++ Daniel Tsai
