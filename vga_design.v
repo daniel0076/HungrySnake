@@ -37,7 +37,7 @@ reg signed [11:0] x1,x2,x3,x4,x5,x6,x7,x8,x9,x10;
 reg signed [11:0] y1,y2,y3,y4,y5,y6,y7,y8,y9,y10;
 //food
 reg signed [11:0] food_x,food_y;
-reg signed [8:0] food_rdm_counter;
+reg signed [9:0] food_rdm_counter;
 reg [5:0] length;
 ///////////////////// write from here ////////////////////////////////////////
 //this is for generic
@@ -63,7 +63,7 @@ always @(posedge CLK) begin
     end
     else begin
         counter <= counter + 1;
-        if(food_rdm_counter>=500)food_rdm_counter<=-500;
+        if(food_rdm_counter>500)food_rdm_counter<=-500;
         else food_rdm_counter<=food_rdm_counter+1;
     end
 end
@@ -264,7 +264,7 @@ always @(posedge snake_clk) begin
     end
 end
 //food FSM
-always @(posedge CLK)begin
+always @(posedge snake_clk)begin
     if(RESET)begin
         f_n_state<=`F_INIT;
     end
@@ -281,16 +281,14 @@ always @(posedge CLK)begin
                 end
             end
             `F_GEN:begin
-               // food_x <=(food_rdm_counter % 350);
-               // food_y <=(food_rdm_counter % 220);
-                food_x<=-100;
-                food_y<=-100;
+                food_x <= food_rdm_counter % 350;
+                food_y <= food_rdm_counter % 220;
                 f_n_state<=`F_WAIT;
             end
             `F_WAIT:begin
                 food_x<=food_x;
                 food_y<=food_y;
-                if(x1-food_x < 35 || food_x-x1<35 || y1-food_y <35 || food_y - y1 < 35)
+                if((x1-food_x < 35 && x1-food_x > -35) || (y1-food_y <35 && y1 - food_y > -35))
                     f_n_state<=`F_GEN;
                 else
                     f_n_state<=`F_WAIT;
