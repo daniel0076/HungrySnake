@@ -2,8 +2,9 @@
 
 `define Width 'd800
 `define Height 'd600
-`define R 'd20
-`define Space 'd36
+`define Space 36
+`define R 20
+`define Area 400
 
 module vga_design( CLK,RESET,SW,BTN_L,BTN_R,BTN_U,BTN_D,vga_h_out_r,vga_v_out_r,vga_data_w );
 //vga design
@@ -31,6 +32,7 @@ reg [3:0] g_c_state,g_n_state;
 reg [3:0] f_c_state,f_n_state;
 reg refill_done;
 reg gg;
+reg [7:0] r;
 //snake record
 reg signed [11:0] x1,x2,x3,x4,x5,x6,x7,x8,x9,x10;
 reg signed [11:0] y1,y2,y3,y4,y5,y6,y7,y8,y9,y10;
@@ -61,13 +63,14 @@ end
 assign vga_clk = counter[0];
 assign snake_clk = counter[25];
 //game control
-always@(posedge snake_clk)begin
+always@(posedge CLK)begin
     if(RESET)begin
         gg<=0;
     end
-    else if(x1 >= 375 || x1 <= -375 || y1 >= 225 || y1 <= -275) begin
+    else if(x1 >= 375 || x1 <= -375 || y1 >= 225 || y1 <= -275)
         gg<=1;
-    end
+    else
+        gg<=0;
 end
 //sanke control
 always @(posedge snake_clk) begin
@@ -88,10 +91,10 @@ always @(posedge snake_clk) begin
         x4<=`R;
         x5<=0;
         x6<=-`R;
-        x7<=-2`R;
-        x8<=-3`R;
-        x9<=-4`R;
-        x10<=-5`R;
+        x7<=-2*`R;
+        x8<=-3*`R;
+        x9<=-4*`R;
+        x10<=-5*`R;
     end
         else begin
         case(g_c_state)
@@ -112,10 +115,10 @@ always @(posedge snake_clk) begin
                 x4<=`R;
                 x5<=0;
                 x6<=-`R;
-                x7<=-2`R;
-                x8<=-3`R;
-                x9<=-4`R;
-                x10<=-5`R;
+                x7<=-2*`R;
+                x8<=-3*`R;
+                x9<=-4*`R;
+                x10<=-5*`R;
             end
             `PLAY:begin
                 y1<=0;
@@ -252,6 +255,9 @@ always @(posedge snake_clk) begin
         endcase
     end
 end
+//food FSM
+always @(posedge snake_clk)begin
+end
 //snake FSM
 always @(posedge CLK) begin
     if (RESET) begin
@@ -355,63 +361,58 @@ end
             color_b<=0;
         end
         else
-        begin if((x-x1)*(x-x1)+(y-y1)*(y-y1)<`R*`R)begin
+        begin if((x-x1)*(x-x1)+(y-y1)*(y-y1)< `Area)begin
                 color_r<=0;
                 color_g<=1;
                 color_b<=0;
             end
-            else if((x-x2)*(x-x2)+(y-y2)*(y-y2)<`R*`R)begin
+            else if((x-x2)*(x-x2)+(y-y2)*(y-y2)<`Area)begin
                 color_r<=0;
                 color_g<=1;
                 color_b<=0;
             end
-            else if((x-x3)*(x-x3)+(y-y3)*(y-y3)<`R*`R)begin
+            else if((x-x3)*(x-x3)+(y-y3)*(y-y3)<`Area)begin
                 color_r<=0;
                 color_g<=1;
                 color_b<=0;
             end
-            else if((x-x4)*(x-x4)+(y-y4)*(y-y4)<`R*`R)begin
+            else if((x-x4)*(x-x4)+(y-y4)*(y-y4)<`Area)begin
                 color_r<=0;
                 color_g<=1;
                 color_b<=0;
             end
-            else if((x-x5)*(x-x5)+(y-y5)*(y-y5)<`R*`R)begin
+            else if((x-x5)*(x-x5)+(y-y5)*(y-y5)<`Area)begin
                 color_r<=0;
                 color_g<=1;
                 color_b<=0;
             end
-            else if((x-x6)*(x-x6)+(y-y6)*(y-y6)<`R*`R)begin
+            else if((x-x6)*(x-x6)+(y-y6)*(y-y6)<`Area)begin
                 color_r<=0;
                 color_g<=1;
                 color_b<=0;
             end
-            else if((x-x7)*(x-x7)+(y-y7)*(y-y7)<`R*`R)begin
+            else if((x-x7)*(x-x7)+(y-y7)*(y-y7)<`Area)begin
                 color_r<=0;
                 color_g<=1;
                 color_b<=0;
             end
-            else if((x-x8)*(x-x8)+(y-y8)*(y-y8)<`R*`R)begin
+            else if((x-x8)*(x-x8)+(y-y8)*(y-y8)<`Area)begin
                 color_r<=0;
                 color_g<=1;
                 color_b<=0;
             end
-            else if((x-x9)*(x-x9)+(y-y9)*(y-y9)<`R*`R)begin
+            else if((x-x9)*(x-x9)+(y-y9)*(y-y9)<`Area)begin
                 color_r<=0;
                 color_g<=1;
                 color_b<=0;
             end
-            else if((x-x10)*(x-x10)+(y-y10)*(y-y10)<`R*`R)begin
+            else if((x-x10)*(x-x10)+(y-y10)*(y-y10)<`Area)begin
                 color_r<=0;
                 color_g<=1;
                 color_b<=0;
             end
             else if( x > -375 && x < 375 && y > -275 && y < 225 )begin
                 color_r<=0;
-                color_g<=0;
-                color_b<=0;
-            end
-            else if( x*x+y*y<400)begin
-                color_r<=1;
                 color_g<=0;
                 color_b<=0;
             end
