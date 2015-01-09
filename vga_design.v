@@ -32,10 +32,12 @@ reg [3:0] g_c_state,g_n_state;
 reg [3:0] f_c_state,f_n_state;
 reg refill_done;
 reg gg;
-reg [7:0] r;
 //snake record
 reg signed [11:0] x1,x2,x3,x4,x5,x6,x7,x8,x9,x10;
 reg signed [11:0] y1,y2,y3,y4,y5,y6,y7,y8,y9,y10;
+//food
+reg signed [11:0] food_x,food_y;
+reg signed [8:0] food_rdm_counter;
 reg [5:0] length;
 ///////////////////// write from here ////////////////////////////////////////
 //this is for generic
@@ -51,14 +53,19 @@ reg [5:0] length;
 // This is for food
 `define F_WAIT  'd8
 `define F_GEN     'd9
+`define F_INIT  'd10
 
 ///////////////////// counter /////////////////////////
 always @(posedge CLK) begin
-    if (RESET)
+    if (RESET)begin
         // reset
-    counter <= 0;
-    else
+        counter <= 0;
+    end
+    else begin
         counter <= counter + 1;
+        if(food_rdm_counter>=500)food_rdm_counter<=-500;
+        else food_rdm_counter<=food_rdm_counter+1;
+    end
 end
 assign vga_clk = counter[0];
 assign snake_clk = counter[25];
@@ -69,8 +76,9 @@ always@(posedge CLK)begin
     end
     else if(x1 >= 375 || x1 <= -375 || y1 >= 225 || y1 <= -275)
         gg<=1;
-    else
+    else begin
         gg<=0;
+    end
 end
 //sanke control
 always @(posedge snake_clk) begin
@@ -256,7 +264,44 @@ always @(posedge snake_clk) begin
     end
 end
 //food FSM
-always @(posedge snake_clk)begin
+always @(posedge CLK)begin
+    if(RESET)begin
+        f_n_state<=`F_INIT;
+    end
+    else begin
+        case(f_c_state)
+            `F_INIT:begin
+                food_x <=0;
+                food_y <=0;
+                if(BTN_L || BTN_U || BTN_R || BTN_D)begin
+                    f_n_state <= `F_GEN;
+                end
+                else begin
+                    f_n_state<=`F_INIT;
+                end
+            end
+            `F_GEN:begin
+               // food_x <=(food_rdm_counter % 350);
+               // food_y <=(food_rdm_counter % 220);
+                food_x<=-100;
+                food_y<=-100;
+                f_n_state<=`F_WAIT;
+            end
+            `F_WAIT:begin
+                food_x<=food_x;
+                food_y<=food_y;
+                if(x1-food_x < 35 || food_x-x1<35 || y1-food_y <35 || food_y - y1 < 35)
+                    f_n_state<=`F_GEN;
+                else
+                    f_n_state<=`F_WAIT;
+            end
+            default:begin
+                food_x<=food_x;
+                food_y<=food_y;
+                f_n_state<=`F_WAIT;
+            end
+        endcase
+    end
 end
 //snake FSM
 always @(posedge CLK) begin
@@ -411,6 +456,11 @@ end
                 color_g<=1;
                 color_b<=0;
             end
+            else if((x-food_x)*(x-food_x)+(y-food_y)*(y-food_y)<225)begin
+                color_r<=1;
+                color_g<=0;
+                color_b<=0;
+            end
             else if( x > -375 && x < 375 && y > -275 && y < 225 )begin
                 color_r<=0;
                 color_g<=0;
@@ -471,11 +521,13 @@ end
             vga_h_out_r<=1'b0;
             vga_v_out_r<=1'b0;
             g_c_state<=`IDLE;
+            f_c_state<=`F_INIT;
         end
         else begin
             vga_h_out_r<=vga_h_out;
             vga_v_out_r<=vga_v_out;
             g_c_state<=g_n_state;
+            f_c_state<=f_n_state;
         end
     end
 
