@@ -2,9 +2,10 @@
 
 `define Width 'd800
 `define Height 'd600
-`define Space 36
+`define Space 20
 `define R 20
 `define Area 400
+
 
 module vga_design( CLK,RESET,SW,BTN_L,BTN_R,BTN_U,BTN_D,vga_h_out_r,vga_v_out_r,vga_data_w );
 //vga design
@@ -28,8 +29,9 @@ reg [1:0] color_r,color_g,color_b;
 reg [25:0] counter;
 wire snake_clk; //1.5 Hz
 
-reg [3:0] g_c_state,g_n_state;
-reg [3:0] f_c_state,f_n_state;
+reg [5:0] g_c_state,g_n_state;
+reg [5:0] s_c_state,s_n_state;
+reg [5:0] f_c_state,f_n_state;
 reg refill_done;
 reg gg;
 //snake record
@@ -54,6 +56,7 @@ reg [5:0] length;
 `define F_WAIT  'd8
 `define F_GEN     'd9
 `define F_INIT  'd10
+// Drawing FSM
 
 ///////////////////// counter /////////////////////////
 always @(posedge CLK) begin
@@ -68,8 +71,21 @@ always @(posedge CLK) begin
     end
 end
 assign vga_clk = counter[0];
-assign snake_clk = counter[25];
-//game control
+assign snake_clk = counter[24];
+//length control
+always@(posedge CLK)begin
+    if(RESET)begin
+        length<=5;
+    end
+    else if((x1-food_x)*(x1-food_x)+(y1-food_y)*(y1-food_y)<1225)begin
+        length<=length+1;
+    end
+    else if(length==10)length<=10;
+    else begin
+        length<=length;
+    end
+end
+//death control
 always@(posedge CLK)begin
     if(RESET)begin
         gg<=0;
@@ -98,37 +114,13 @@ always @(posedge snake_clk) begin
         x3<=2*`R;
         x4<=`R;
         x5<=0;
-        x6<=-`R;
-        x7<=-2*`R;
-        x8<=-3*`R;
-        x9<=-4*`R;
-        x10<=-5*`R;
+        x6<=0;
+        x7<=0;
+        x8<=0;
+        x9<=0;
+        x10<=0;
     end
-        else begin
-        case(g_c_state)
-            `IDLE:begin
-                y1<=0;
-                y2<=0;
-                y3<=0;
-                y4<=0;
-                y5<=0;
-                y6<=0;
-                y7<=0;
-                y8<=0;
-                y9<=0;
-                y10<=0;
-                x1<=4*`R;
-                x2<=3*`R;
-                x3<=2*`R;
-                x4<=`R;
-                x5<=0;
-                x6<=-`R;
-                x7<=-2*`R;
-                x8<=-3*`R;
-                x9<=-4*`R;
-                x10<=-5*`R;
-            end
-            `PLAY:begin
+        else if(g_c_state==`IDLE || g_c_state == `PLAY) begin
                 y1<=0;
                 y2<=0;
                 y3<=0;
@@ -150,93 +142,71 @@ always @(posedge snake_clk) begin
                 x9<=0;
                 x10<=0;
             end
-            `RIGHT:begin
-                x1<=x1+`Space;
+            else begin
                 x2<=x1;
                 x3<=x2;
                 x4<=x3;
                 x5<=x4;
-                x6<=x5;
-                x7<=x6;
-                x8<=x7;
-                x9<=x8;
-                x10<=x9;
-                y1<=y1;
                 y2<=y1;
                 y3<=y2;
                 y4<=y3;
                 y5<=y4;
-                y6<=y5;
-                y7<=y6;
-                y8<=y7;
-                y9<=y8;
-                y10<=y9;
+                if(length>5)begin
+                    x6<=x5;
+                    y6<=y5;
+                end
+                else begin
+                    x6<=x4;
+                    y6<=y4;
+                end
+                if(length>6)begin
+                    x7<=x6;
+                    y7<=y6;
+                end
+                else begin
+                    x7<=x4;
+                    y7<=y4;
+                end
+                if(length>7)begin
+                    x8<=x7;
+                    y8<=y7;
+                end
+                else begin
+                    x8<=x4;
+                    y8<=y4;
+                end
+                if(length>8)begin
+                    x9<=x8;
+                    y9<=y8;
+                end
+                else begin
+                    x9<=x4;
+                    y9<=y4;
+                end
+                if(length>9)begin
+                    x10<=x9;
+                    y10<=y9;
+                end
+                else begin
+                    x10<=x4;
+                    y10<=y4;
+                end
+        case(g_c_state)
+            `RIGHT:begin
+                x1<=x1+`Space;
+                y1<=y1;
             end
             `LEFT:begin
                 x1<=x1-`Space;
-                x2<=x1;
-                x3<=x2;
-                x4<=x3;
-                x5<=x4;
-                x6<=x5;
-                x7<=x6;
-                x8<=x7;
-                x9<=x8;
-                x10<=x9;
                 y1<=y1;
-                y2<=y1;
-                y3<=y2;
-                y4<=y3;
-                y5<=y4;
-                y6<=y5;
-                y7<=y6;
-                y8<=y7;
-                y9<=y8;
-                y10<=y9;
             end
             `UP:begin
                 x1<=x1;
-                x2<=x1;
-                x3<=x2;
-                x4<=x3;
-                x5<=x4;
-                x6<=x5;
-                x7<=x6;
-                x8<=x7;
-                x9<=x8;
-                x10<=x9;
                 y1<=y1+`Space;
-                y2<=y1;
-                y3<=y2;
-                y4<=y3;
-                y5<=y4;
-                y6<=y5;
-                y7<=y6;
-                y8<=y7;
-                y9<=y8;
-                y10<=y9;
             end
             `DOWN:begin
                 x1<=x1;
-                x2<=x1;
-                x3<=x2;
-                x4<=x3;
-                x5<=x4;
-                x6<=x5;
-                x7<=x6;
-                x8<=x7;
-                x9<=x8;
-                x10<=x9;
                 y1<=y1-`Space;
-                y2<=y1;
-                y3<=y2;
-                y4<=y3;
-                y5<=y4;
-                y6<=y5;
-                y7<=y6;
-                y8<=y7;
-                y9<=y8;
-                y10<=y9;
             end
         default:begin
             x1<=x1;
@@ -264,113 +234,103 @@ always @(posedge snake_clk) begin
     end
 end
 //food FSM
-always @(posedge snake_clk)begin
-    if(RESET)begin
-        f_n_state<=`F_INIT;
-    end
-    else begin
+always @(*)begin
         case(f_c_state)
             `F_INIT:begin
-                food_x <=0;
-                food_y <=0;
+                food_x =0;
+                food_y =0;
                 if(BTN_L || BTN_U || BTN_R || BTN_D)begin
-                    f_n_state <= `F_GEN;
+                    f_n_state = `F_GEN;
                 end
                 else begin
-                    f_n_state<=`F_INIT;
+                    f_n_state=`F_INIT;
                 end
             end
             `F_GEN:begin
-                food_x <= food_rdm_counter % 350;
-                food_y <= food_rdm_counter % 220;
-                f_n_state<=`F_WAIT;
+                food_x = (food_rdm_counter % 16)*20;
+                food_y = (food_rdm_counter % 11)*20;
+                f_n_state=`F_WAIT;
             end
             `F_WAIT:begin
-                food_x<=food_x;
-                food_y<=food_y;
-                if((x1-food_x < 35 && x1-food_x > -35) || (y1-food_y <35 && y1 - food_y > -35))
-                    f_n_state<=`F_GEN;
+                food_x=food_x;
+                food_y=food_y;
+                if((x1-food_x)*(x1-food_x)+(y1-food_y)*(y1-food_y)<1225)
+                    f_n_state=`F_GEN;
                 else
-                    f_n_state<=`F_WAIT;
+                    f_n_state=`F_WAIT;
             end
             default:begin
-                food_x<=food_x;
-                food_y<=food_y;
-                f_n_state<=`F_WAIT;
+                food_x=food_x;
+                food_y=food_y;
+                f_n_state=`F_WAIT;
             end
         endcase
     end
-end
 //snake FSM
-always @(posedge CLK) begin
-    if (RESET) begin
-        g_n_state<=`IDLE;
-    end
-    else begin
+always @(*) begin
         case(g_c_state)
             `IDLE:begin
-            wen<=1;
+            wen=1;
                 if(BTN_L || BTN_U || BTN_R || BTN_D )begin
-                    g_n_state<=`PLAY;
+                    g_n_state=`PLAY;
                 end
-                else  g_n_state<=`IDLE;
+                else  g_n_state=`IDLE;
             end
             `PLAY:begin
-            wen<=1;
-                if(gg)g_n_state<=`GG;
-                else if(BTN_L)g_n_state<=`RIGHT;
-                else if(BTN_R)g_n_state<=`RIGHT;
-                else if(BTN_U)g_n_state<=`UP;
-                else if(BTN_D)g_n_state<=`DOWN;
-                else g_n_state<=g_c_state;
+            wen=1;
+                if(gg)g_n_state=`GG;
+                else if(BTN_L)g_n_state=`RIGHT;
+                else if(BTN_R)g_n_state=`RIGHT;
+                else if(BTN_U)g_n_state=`UP;
+                else if(BTN_D)g_n_state=`DOWN;
+                else g_n_state=`PLAY;
             end
             `RIGHT:begin
-            wen<=1;
-                if(gg)g_n_state<=`GG;
-                else if(BTN_L)g_n_state<=`RIGHT;
-                else if(BTN_R)g_n_state<=`RIGHT;
-                else if(BTN_U)g_n_state<=`UP;
-                else if(BTN_D)g_n_state<=`DOWN;
-                else g_n_state<=g_c_state;
+            wen=1;
+                if(gg)g_n_state=`GG;
+                else if(BTN_L)g_n_state=`RIGHT;
+                else if(BTN_R)g_n_state=`RIGHT;
+                else if(BTN_U)g_n_state=`UP;
+                else if(BTN_D)g_n_state=`DOWN;
+                else g_n_state=g_c_state;
             end
             `LEFT:begin
-            wen<=1;
-                if(gg)g_n_state<=`GG;
-                else if(BTN_L)g_n_state<=`LEFT;
-                else if(BTN_R)g_n_state<=`LEFT;
-                else if(BTN_U)g_n_state<=`UP;
-                else if(BTN_D)g_n_state<=`DOWN;
-                else g_n_state<=g_c_state;
+            wen=1;
+                if(gg)g_n_state=`GG;
+                else if(BTN_L)g_n_state=`LEFT;
+                else if(BTN_R)g_n_state=`LEFT;
+                else if(BTN_U)g_n_state=`UP;
+                else if(BTN_D)g_n_state=`DOWN;
+                else g_n_state=g_c_state;
             end
             `UP:begin
-            wen<=1;
-                if(gg)g_n_state<=`GG;
-                else if(BTN_L)g_n_state<=`LEFT;
-                else if(BTN_R)g_n_state<=`RIGHT;
-                else if(BTN_U)g_n_state<=`UP;
-                else if(BTN_D)g_n_state<=`UP;
-                else g_n_state<=g_c_state;
+            wen=1;
+                if(gg)g_n_state=`GG;
+                else if(BTN_L)g_n_state=`LEFT;
+                else if(BTN_R)g_n_state=`RIGHT;
+                else if(BTN_U)g_n_state=`UP;
+                else if(BTN_D)g_n_state=`UP;
+                else g_n_state=g_c_state;
             end
         `DOWN:begin
-            wen<=1;
-            if(gg)g_n_state<=`GG;
-            else if(BTN_L)g_n_state<=`LEFT;
-            else if(BTN_R)g_n_state<=`RIGHT;
-            else if(BTN_U)g_n_state<=`DOWN;
-            else if(BTN_D)g_n_state<=`DOWN;
-            else g_n_state<=g_c_state;
+            wen=1;
+            if(gg)g_n_state=`GG;
+            else if(BTN_L)g_n_state=`LEFT;
+            else if(BTN_R)g_n_state=`RIGHT;
+            else if(BTN_U)g_n_state=`DOWN;
+            else if(BTN_D)g_n_state=`DOWN;
+            else g_n_state=g_c_state;
         end
         `GG:begin
-            wen<=0;
-            g_n_state<=`GG;
+            wen=0;
+            g_n_state=`GG;
         end
         default:begin
-            wen <= 0;
-            g_n_state <= g_n_state;
+            wen = 0;
+            g_n_state = g_n_state;
         end
         endcase
     end
-end
 
     //////////////// draw color ///////////////////////////
     always@(posedge CLK)begin
@@ -398,13 +358,47 @@ end
 
     ////////////////////save color/////////////////
     always@(posedge CLK)begin
-        if(RESET)begin
-            color_r<=0;
-            color_g<=0;
-            color_b<=0;
+            if(RESET)begin
+                color_r<=0;
+                color_g<=0;
+                color_b<=0;
+            end
+            else if(g_n_state == `IDLE)begin
+            if( x >= -250 && x < -100 && y >= -150 && y < 50 )begin
+                if(x >= -235 && x < -115 && y >= -135 && y < 35 )begin
+                    color_r<=2'b01;
+                    color_g<=2'b01;
+                    color_b<=2'b11;
+                end
+                else begin
+                    color_r<=2'b00;
+                    color_g<=2'b00;
+                    color_b<=2'b11;
+                end
+            end
+            else if ( (x >= -100 && x < 0 && y >= 35 && y < 50)
+                ||(x >= -100 && x < 0 && y >= -130 && y < -115)
+                ||(x >= 0 && x < 250 && y >= -150 && y < -135)
+                ||(x >= 100 && x < 250 && y >= 55 && y < 70)
+                ||(x >= 50 && x < 100 && y >= 135 && y < 150)
+                ||(x >= 0 && x < 50 && y >= 75 && y < 90)
+                ||(x >= 0 && x < 15 && y >= 35 && y < 75)
+                ||(x >= 0 && x < 15 && y >= -150 && y < -115)
+                ||(x >= 235 && x < 250 && y >= -135 && y < 55)
+                ||(x >= 85 && x < 100 && y >= 55 && y < 150)
+                ||(x >= 50 && x < 65 && y >= 75 && y < 150) ) begin
+                color_r<=2'b00;
+                color_g<=2'b00;
+                color_b<=2'b11;
+                end
+            else begin
+                color_r<=2'b11;
+                color_g<=2'b11;
+                color_b<=2'b11;
+            end
         end
-        else
-        begin if((x-x1)*(x-x1)+(y-y1)*(y-y1)< `Area)begin
+        else begin
+            if((x-x1)*(x-x1)+(y-y1)*(y-y1)< `Area)begin
                 color_r<=0;
                 color_g<=1;
                 color_b<=0;
