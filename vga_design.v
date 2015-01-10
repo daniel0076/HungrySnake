@@ -2,7 +2,7 @@
 
 `define Width 'd800
 `define Height 'd600
-`define Space 20
+`define Space 30
 `define R 20
 `define Area 400
 
@@ -77,7 +77,7 @@ always@(posedge CLK)begin
     if(RESET)begin
         length<=5;
     end
-    else if((x1-food_x)*(x1-food_x)+(y1-food_y)*(y1-food_y)<1225)begin
+    else if((x1-food_x)*(x1-food_x)+(y1-food_y)*(y1-food_y)<1200)begin
         length<=length+1;
     end
     else if(length==10)length<=10;
@@ -256,6 +256,9 @@ always @(*)begin
                 food_y=food_y;
                 if((x1-food_x)*(x1-food_x)+(y1-food_y)*(y1-food_y)<1225)
                     f_n_state=`F_GEN;
+                else if(food_x>375 || food_x<-375 || food_y >225 || food_x < -275)begin
+                    f_n_state=`F_GEN;
+                end
                 else
                     f_n_state=`F_WAIT;
             end
@@ -401,20 +404,36 @@ always @(*) begin
                     ||(x >= 0 && x < 250 && y >= -150 && y < -135)
                     ||(x >= 100 && x < 250 && y >= 55 && y < 70)
                     ||(x >= 50 && x < 125 && y >= 135 && y < 150)
-                    ||(x >= 0 && x < 50 && y >= 75 && y < 90)
-                    ||(x >= 0 && x < 15 && y >= 35 && y < 75)
-                    ||(x >= 0 && x < 15 && y >= -150 && y < -115)
+                    ||(x >= 0 && x < 50 && y >= 75 && y < 90) ) begin
+                        color_r<=2'b00;
+                        color_g<=2'b00;
+                        color_b<=2'b11;
+                    end
+                    else if ( (x >= 0 && x < 15 && y >= 35 && y < 75)
+                        ||(x >= 0 && x < 15 && y >= -150 && y < -115)
                     ||(x >= 235 && x < 250 && y >= -135 && y < 55)
                     ||(x >= 110 && x < 125 && y >= 55 && y < 150)
-                    ||(x >= 50 && x < 65 && y >= 75 && y < 150)
-                    ||(x >= -225 && x < -210 && y >= -275 && y < -175)
-                    ||(x >= -225 && x < -135 && y >= -275 && y < -255)
-                    ||(x >= -85 && x < -50 && y >= -275 && y < -175)
-                    ||(x >= 0 && x < 15 && y >= -275 && y < -175)
-                    ||( (x+y+65 <= 0) && (x+y+75 > 0) && y >= -225 && y < -175)
-                    ||( (x-y+35 <= 0) && (x-y+45 > 0) && y >= -275 && y < -225)
-                    ||(x >= 120 && x < 135 && y >= -275 && y < -175)
-                    ||(x >= 135 && x < 225 && y >= -160 && y < -175)
+                    ||(x >= 50 && x < 65 && y >= 75 && y < 150) ) begin
+                        color_r<=2'b00;
+                        color_g<=2'b00;
+                        color_b<=2'b11;
+                    end
+                    else if ( (x >= -225 && x < -210 && y >= -275 && y < -175)
+                        ||(x >= -225 && x < -135 && y >= -275 && y < -255)
+                    ||(x >= -85 && x < -50 && y >= -275 && y < -175) ) begin
+                        color_r<=2'b00;
+                        color_g<=2'b00;
+                        color_b<=2'b11;
+                    end
+                    else if ( (x >= 0 && x < 15 && y >= -275 && y < -175)
+                        ||( x+y+65 < 0 && x+y+75 >= 0 && y >= -225 && y < -175)
+                    ||( x-y+35 < 0 && x-y+45 >= 0 && y >= -275 && y < -225) ) begin
+                        color_r<=2'b00;
+                        color_g<=2'b00;
+                        color_b<=2'b11;
+                    end
+                    else if ( (x >= 120 && x < 135 && y >= -275 && y < -175)
+                        ||(x >= 135 && x < 225 && y >= -160 && y < -175)
                     ||(x >= 135 && x < 225 && y >= -240 && y < -215)
                     ||(x >= 135 && x < 225 && y >= -275 && y < -260) ) begin
                         color_r<=2'b00;
