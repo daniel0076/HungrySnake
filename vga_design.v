@@ -29,9 +29,9 @@ reg [1:0] color_r,color_g,color_b;
 reg [25:0] counter;
 wire snake_clk; //1.5 Hz
 
-reg [5:0] g_c_state,g_n_state;
 reg [5:0] s_c_state,s_n_state;
 reg [5:0] f_c_state,f_n_state;
+reg [5:0] g_c_state,g_n_state;
 reg refill_done;
 reg gg;
 //snake record
@@ -120,7 +120,7 @@ always @(posedge snake_clk) begin
         x9<=0;
         x10<=0;
     end
-        else if(g_c_state==`IDLE || g_c_state == `PLAY) begin
+        else if(s_c_state==`IDLE || s_c_state == `PLAY) begin
                 y1<=0;
                 y2<=0;
                 y3<=0;
@@ -191,7 +191,7 @@ always @(posedge snake_clk) begin
                     x10<=x4;
                     y10<=y4;
                 end
-        case(g_c_state)
+        case(s_c_state)
             `RIGHT:begin
                 x1<=x1+`Space;
                 y1<=y1;
@@ -266,68 +266,86 @@ always @(*)begin
             end
         endcase
     end
+//generic FSM
+always@(*)begin
+    case(g_c_state)
+        `IDLE:begin
+            if(BTN_L || BTN_U || BTN_R || BTN_D )begin
+                g_n_state=`PLAY;
+            end
+            else  g_n_state=`IDLE;
+        end
+        `PLAY:begin
+            if(gg) g_n_state=`GG;
+            else g_n_state=`PLAY;
+        end
+        `GG:begin
+            g_n_state=`GG;
+        end
+    endcase
+end
 //snake FSM
 always @(*) begin
-        case(g_c_state)
+        case(s_c_state)
             `IDLE:begin
             wen=1;
                 if(BTN_L || BTN_U || BTN_R || BTN_D )begin
-                    g_n_state=`PLAY;
+                    s_n_state=`PLAY;
                 end
-                else  g_n_state=`IDLE;
+                else  s_n_state=`IDLE;
             end
             `PLAY:begin
             wen=1;
-                if(gg)g_n_state=`GG;
-                else if(BTN_L)g_n_state=`RIGHT;
-                else if(BTN_R)g_n_state=`RIGHT;
-                else if(BTN_U)g_n_state=`UP;
-                else if(BTN_D)g_n_state=`DOWN;
-                else g_n_state=`PLAY;
+                if(gg)s_n_state=`GG;
+                else if(BTN_L)s_n_state=`RIGHT;
+                else if(BTN_R)s_n_state=`RIGHT;
+                else if(BTN_U)s_n_state=`UP;
+                else if(BTN_D)s_n_state=`DOWN;
+                else s_n_state=`PLAY;
             end
             `RIGHT:begin
             wen=1;
-                if(gg)g_n_state=`GG;
-                else if(BTN_L)g_n_state=`RIGHT;
-                else if(BTN_R)g_n_state=`RIGHT;
-                else if(BTN_U)g_n_state=`UP;
-                else if(BTN_D)g_n_state=`DOWN;
-                else g_n_state=g_c_state;
+                if(gg)s_n_state=`GG;
+                else if(BTN_L)s_n_state=`RIGHT;
+                else if(BTN_R)s_n_state=`RIGHT;
+                else if(BTN_U)s_n_state=`UP;
+                else if(BTN_D)s_n_state=`DOWN;
+                else s_n_state=s_c_state;
             end
             `LEFT:begin
             wen=1;
-                if(gg)g_n_state=`GG;
-                else if(BTN_L)g_n_state=`LEFT;
-                else if(BTN_R)g_n_state=`LEFT;
-                else if(BTN_U)g_n_state=`UP;
-                else if(BTN_D)g_n_state=`DOWN;
-                else g_n_state=g_c_state;
+                if(gg)s_n_state=`GG;
+                else if(BTN_L)s_n_state=`LEFT;
+                else if(BTN_R)s_n_state=`LEFT;
+                else if(BTN_U)s_n_state=`UP;
+                else if(BTN_D)s_n_state=`DOWN;
+                else s_n_state=s_c_state;
             end
             `UP:begin
             wen=1;
-                if(gg)g_n_state=`GG;
-                else if(BTN_L)g_n_state=`LEFT;
-                else if(BTN_R)g_n_state=`RIGHT;
-                else if(BTN_U)g_n_state=`UP;
-                else if(BTN_D)g_n_state=`UP;
-                else g_n_state=g_c_state;
+                if(gg)s_n_state=`GG;
+                else if(BTN_L)s_n_state=`LEFT;
+                else if(BTN_R)s_n_state=`RIGHT;
+                else if(BTN_U)s_n_state=`UP;
+                else if(BTN_D)s_n_state=`UP;
+                else s_n_state=s_c_state;
             end
         `DOWN:begin
             wen=1;
-            if(gg)g_n_state=`GG;
-            else if(BTN_L)g_n_state=`LEFT;
-            else if(BTN_R)g_n_state=`RIGHT;
-            else if(BTN_U)g_n_state=`DOWN;
-            else if(BTN_D)g_n_state=`DOWN;
-            else g_n_state=g_c_state;
+            if(gg)s_n_state=`GG;
+            else if(BTN_L)s_n_state=`LEFT;
+            else if(BTN_R)s_n_state=`RIGHT;
+            else if(BTN_U)s_n_state=`DOWN;
+            else if(BTN_D)s_n_state=`DOWN;
+            else s_n_state=s_c_state;
         end
         `GG:begin
             wen=0;
-            g_n_state=`GG;
+            s_n_state=`GG;
         end
         default:begin
             wen = 0;
-            g_n_state = g_n_state;
+            s_n_state = s_n_state;
         end
         endcase
     end
@@ -358,169 +376,196 @@ always @(*) begin
 
     ////////////////////save color/////////////////
     always@(posedge CLK)begin
-            if(RESET)begin
-                color_r<=0;
-                color_g<=0;
-                color_b<=0;
-            end
-            else if(g_n_state == `IDLE)begin
-            if( x >= -250 && x < -100 && y >= -150 && y < 50 )begin
-                if(x >= -235 && x < -115 && y >= -135 && y < 35 )begin
-                    color_r<=2'b01;
-                    color_g<=2'b01;
-                    color_b<=2'b11;
-                end
-                else begin
-                    color_r<=2'b00;
-                    color_g<=2'b00;
-                    color_b<=2'b11;
-                end
-            end
-            else if ( (x >= -100 && x < 0 && y >= 35 && y < 50)
-                ||(x >= -100 && x < 0 && y >= -130 && y < -115)
-                ||(x >= 0 && x < 250 && y >= -150 && y < -135)
-                ||(x >= 100 && x < 250 && y >= 55 && y < 70)
-                ||(x >= 50 && x < 100 && y >= 135 && y < 150)
-                ||(x >= 0 && x < 50 && y >= 75 && y < 90)
-                ||(x >= 0 && x < 15 && y >= 35 && y < 75)
-                ||(x >= 0 && x < 15 && y >= -150 && y < -115)
-                ||(x >= 235 && x < 250 && y >= -135 && y < 55)
-                ||(x >= 85 && x < 100 && y >= 55 && y < 150)
-                ||(x >= 50 && x < 65 && y >= 75 && y < 150) ) begin
-                color_r<=2'b00;
-                color_g<=2'b00;
-                color_b<=2'b11;
-                end
-            else begin
-                color_r<=2'b11;
-                color_g<=2'b11;
-                color_b<=2'b11;
-            end
-        end
-        else begin
-            if((x-x1)*(x-x1)+(y-y1)*(y-y1)< `Area)begin
-                color_r<=0;
-                color_g<=1;
-                color_b<=0;
-            end
-            else if((x-x2)*(x-x2)+(y-y2)*(y-y2)<`Area)begin
-                color_r<=0;
-                color_g<=1;
-                color_b<=0;
-            end
-            else if((x-x3)*(x-x3)+(y-y3)*(y-y3)<`Area)begin
-                color_r<=0;
-                color_g<=1;
-                color_b<=0;
-            end
-            else if((x-x4)*(x-x4)+(y-y4)*(y-y4)<`Area)begin
-                color_r<=0;
-                color_g<=1;
-                color_b<=0;
-            end
-            else if((x-x5)*(x-x5)+(y-y5)*(y-y5)<`Area)begin
-                color_r<=0;
-                color_g<=1;
-                color_b<=0;
-            end
-            else if((x-x6)*(x-x6)+(y-y6)*(y-y6)<`Area)begin
-                color_r<=0;
-                color_g<=1;
-                color_b<=0;
-            end
-            else if((x-x7)*(x-x7)+(y-y7)*(y-y7)<`Area)begin
-                color_r<=0;
-                color_g<=1;
-                color_b<=0;
-            end
-            else if((x-x8)*(x-x8)+(y-y8)*(y-y8)<`Area)begin
-                color_r<=0;
-                color_g<=1;
-                color_b<=0;
-            end
-            else if((x-x9)*(x-x9)+(y-y9)*(y-y9)<`Area)begin
-                color_r<=0;
-                color_g<=1;
-                color_b<=0;
-            end
-            else if((x-x10)*(x-x10)+(y-y10)*(y-y10)<`Area)begin
-                color_r<=0;
-                color_g<=1;
-                color_b<=0;
-            end
-            else if((x-food_x)*(x-food_x)+(y-food_y)*(y-food_y)<225)begin
-                color_r<=1;
-                color_g<=0;
-                color_b<=0;
-            end
-            else if( x > -375 && x < 375 && y > -275 && y < 225 )begin
-                color_r<=0;
-                color_g<=0;
-                color_b<=0;
-            end
-            else begin
-                color_r<=1;
-                color_g<=1;
-                color_b<=1;
-            end
-        end
-    end
-    ////////////////////////////////////
-
-    assign x=x_m - (`Width / 2);
-    assign y=(`Height/2) - y_m;
-    assign addr_w=y_m*`Width+x_m;
-    assign vga_addr=vga_y*`Width+vga_x;
-    ///////////////// block memory 800x600 //////////////////////////////////////
-
-    blk_mem_gen_v7_3 mem(
-        .clka(CLK),
-        .wea(wen),
-        .addra(addr_w),
-        .dina({color_r,color_g,color_b}),
-        .douta(out_a),
-
-        .clkb(CLK),
-        .web(1'b0), // I am b ,I don't write
-        .addrb(vga_addr),
-        .dinb(6'd0),
-        .doutb(rgb_data) //rgb data out to vga_out module
-    );
-
-    ///////////////// vga_out ///////////////////////////////////////////////////
-
-    wire vag_clk_p,vga_clk_n; //useless
-    wire vga_h_out,vga_v_out;
-
-    wire [11:0]vga_x;
-    wire [11:0]vga_y;
-    wire rst_n;
-    assign rst_n = ~RESET;
-    vga_out out(
-        .clk_fpga(vga_clk),
-        .rst_n(rst_n),
-        .vga_clk_p(vga_clk_p),
-        .vga_clk_n(vga_clk_n),
-        .vga_h_out(vga_h_out),
-        .vga_v_out(vga_v_out),
-        .vga_data(vga_data_w), // RGB data
-        .x(vga_x),
-        .y(vga_y),
-        .rgb_data(rgb_data) //data in
-    );
-    always@(posedge CLK)begin
         if(RESET)begin
-            vga_h_out_r<=1'b0;
-            vga_v_out_r<=1'b0;
-            g_c_state<=`IDLE;
-            f_c_state<=`F_INIT;
+            color_r<=2'b00;
+            color_g<=2'b00;
+            color_b<=2'b00;
         end
         else begin
-            vga_h_out_r<=vga_h_out;
-            vga_v_out_r<=vga_v_out;
-            g_c_state<=g_n_state;
-            f_c_state<=f_n_state;
+            case(g_c_state)
+                `IDLE:begin
+                    if( x >= -250 && x < -100 && y >= -150 && y < 50 )begin
+                        if(x >= -235 && x < -115 && y >= -135 && y < 35 )begin
+                            color_r<=2'b01;
+                            color_g<=2'b01;
+                            color_b<=2'b11;
+                        end
+                        else begin
+                            color_r<=2'b00;
+                            color_g<=2'b00;
+                            color_b<=2'b11;
+                        end
+                    end
+                    else if ( (x >= -100 && x < 0 && y >= 35 && y < 50)
+                        ||(x >= -100 && x < 0 && y >= -130 && y < -115)
+                    ||(x >= 0 && x < 250 && y >= -150 && y < -135)
+                    ||(x >= 100 && x < 250 && y >= 55 && y < 70)
+                    ||(x >= 50 && x < 125 && y >= 135 && y < 150)
+                    ||(x >= 0 && x < 50 && y >= 75 && y < 90)
+                    ||(x >= 0 && x < 15 && y >= 35 && y < 75)
+                    ||(x >= 0 && x < 15 && y >= -150 && y < -115)
+                    ||(x >= 235 && x < 250 && y >= -135 && y < 55)
+                    ||(x >= 110 && x < 125 && y >= 55 && y < 150)
+                    ||(x >= 50 && x < 65 && y >= 75 && y < 150)
+                    ||(x >= -225 && x < -210 && y >= -275 && y < -175)
+                    ||(x >= -225 && x < -135 && y >= -275 && y < -255)
+                    ||(x >= -85 && x < -50 && y >= -275 && y < -175)
+                    ||(x >= 0 && x < 15 && y >= -275 && y < -175)
+                    ||( (x+y+65 <= 0) && (x+y+75 > 0) && y >= -225 && y < -175)
+                    ||( (x-y+35 <= 0) && (x-y+45 > 0) && y >= -275 && y < -225)
+                    ||(x >= 120 && x < 135 && y >= -275 && y < -175)
+                    ||(x >= 135 && x < 225 && y >= -160 && y < -175)
+                    ||(x >= 135 && x < 225 && y >= -240 && y < -215)
+                    ||(x >= 135 && x < 225 && y >= -275 && y < -260) ) begin
+                        color_r<=2'b00;
+                        color_g<=2'b00;
+                        color_b<=2'b11;
+                    end
+                    else begin
+                        color_r<=2'b11;
+                        color_g<=2'b11;
+                        color_b<=2'b11;
+                    end
+                end
+                `PLAY:begin
+                    if((x-x1)*(x-x1)+(y-y1)*(y-y1)< `Area)begin
+                        color_r<=2'b00;
+                        color_g<=2'b11;
+                        color_b<=2'b00;
+                    end
+                    else if((x-x2)*(x-x2)+(y-y2)*(y-y2)<`Area)begin
+                        color_r<=2'b00;
+                        color_g<=2'b11;
+                        color_b<=2'b00;
+                    end
+                    else if((x-x3)*(x-x3)+(y-y3)*(y-y3)<`Area)begin
+                        color_r<=2'b00;
+                        color_g<=2'b11;
+                        color_b<=2'b00;
+                    end
+                    else if((x-x4)*(x-x4)+(y-y4)*(y-y4)<`Area)begin
+                        color_r<=2'b00;
+                        color_g<=2'b11;
+                        color_b<=2'b00;
+                    end
+                    else if((x-x5)*(x-x5)+(y-y5)*(y-y5)<`Area)begin
+                        color_r<=2'b00;
+                        color_g<=2'b11;
+                        color_b<=2'b00;
+                    end
+                    else if((x-x6)*(x-x6)+(y-y6)*(y-y6)<`Area)begin
+                        color_r<=2'b00;
+                        color_g<=2'b11;
+                        color_b<=2'b00;
+                    end
+                    else if((x-x7)*(x-x7)+(y-y7)*(y-y7)<`Area)begin
+                        color_r<=2'b00;
+                        color_g<=2'b11;
+                        color_b<=2'b00;
+                    end
+                    else if((x-x8)*(x-x8)+(y-y8)*(y-y8)<`Area)begin
+                        color_r<=2'b00;
+                        color_g<=2'b11;
+                        color_b<=2'b00;
+                    end
+                    else if((x-x9)*(x-x9)+(y-y9)*(y-y9)<`Area)begin
+                        color_r<=2'b00;
+                        color_g<=2'b11;
+                        color_b<=2'b00;
+                    end
+                    else if((x-x10)*(x-x10)+(y-y10)*(y-y10)<`Area)begin
+                        color_r<=2'b00;
+                        color_g<=2'b11;
+                        color_b<=2'b00;
+                    end
+                    else if((x-food_x)*(x-food_x)+(y-food_y)*(y-food_y)<225)begin
+                        color_r<=2'b11;
+                        color_g<=2'b00;
+                        color_b<=2'b00;
+                    end
+                    else if( x > -375 && x < 375 && y > -275 && y < 225 )begin
+                        color_r<=2'b00;
+                        color_g<=2'b00;
+                        color_b<=2'b00;
+                    end
+                    else begin
+                        color_r<=2'b11;
+                        color_g<=2'b11;
+                        color_b<=2'b11;
+                    end
+                end
+                `GG:begin
+                        color_r<=color_r;
+                        color_g<=color_g;
+                        color_b<=color_b;
+                    end
+                default:begin
+                        color_r<=color_r;
+                        color_g<=color_g;
+                        color_b<=color_b;
+                end
+            endcase
         end
     end
+////////////////////////////////////
 
-    endmodule
+assign x=x_m - (`Width / 2);
+assign y=(`Height/2) - y_m;
+assign addr_w=y_m*`Width+x_m;
+assign vga_addr=vga_y*`Width+vga_x;
+///////////////// block memory 800x600 //////////////////////////////////////
+
+blk_mem_gen_v7_3 mem(
+    .clka(CLK),
+    .wea(wen),
+    .addra(addr_w),
+    .dina({color_r,color_g,color_b}),
+    .douta(out_a),
+
+    .clkb(CLK),
+    .web(1'b0), // I am b ,I don't write
+    .addrb(vga_addr),
+    .dinb(6'd0),
+    .doutb(rgb_data) //rgb data out to vga_out module
+);
+
+///////////////// vga_out ///////////////////////////////////////////////////
+
+wire vag_clk_p,vga_clk_n; //useless
+wire vga_h_out,vga_v_out;
+
+wire [11:0]vga_x;
+wire [11:0]vga_y;
+wire rst_n;
+assign rst_n = ~RESET;
+vga_out out(
+    .clk_fpga(vga_clk),
+    .rst_n(rst_n),
+    .vga_clk_p(vga_clk_p),
+    .vga_clk_n(vga_clk_n),
+    .vga_h_out(vga_h_out),
+    .vga_v_out(vga_v_out),
+    .vga_data(vga_data_w), // RGB data
+    .x(vga_x),
+    .y(vga_y),
+    .rgb_data(rgb_data) //data in
+);
+always@(posedge CLK)begin
+    if(RESET)begin
+        vga_h_out_r<=1'b0;
+        vga_v_out_r<=1'b0;
+        s_c_state<=`IDLE;
+        g_c_state<=`IDLE;
+        f_c_state<=`F_INIT;
+
+    end
+    else begin
+        vga_h_out_r<=vga_h_out;
+        vga_v_out_r<=vga_v_out;
+        s_c_state<=s_n_state;
+        g_c_state<=g_n_state;
+        f_c_state<=f_n_state;
+    end
+end
+
+endmodule
