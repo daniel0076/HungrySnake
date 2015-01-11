@@ -41,12 +41,13 @@ reg signed [11:0] y1,y2,y3,y4,y5,y6,y7,y8,y9,y10;
 reg signed [11:0] food_x,food_y;
 reg signed [9:0] food_rdm_counter;
 reg [5:0] length;
+reg eaten;
 ///////////////////// write from here ////////////////////////////////////////
 //this is for generic
 `define IDLE       'd0
 `define PLAY       'd1
 `define GG         'd2
-`define PAUSE    'd3
+`define INIT       'd3
 //this is for snake
 `define RIGHT       'd4
 `define LEFT        'd5
@@ -77,7 +78,7 @@ always@(posedge CLK)begin
     if(RESET)begin
         length<=5;
     end
-    else if((x1-food_x)*(x1-food_x)+(y1-food_y)*(y1-food_y)<1200)begin
+    else if(eaten)begin
         length<=length+1;
     end
     else if(length==10)length<=10;
@@ -234,123 +235,142 @@ always @(posedge snake_clk) begin
     end
 end
 //food FSM
-always @(*)begin
+always @(posedge CLK)begin
+    if(RESET)begin
+        food_x <=0;
+        food_y <=0;
+        eaten<=0;
+        f_n_state<=`F_INIT;
+    end
+    else begin
         case(f_c_state)
             `F_INIT:begin
-                food_x =0;
-                food_y =0;
+                food_x <= 1000;
+                food_y <= 1000;
+                eaten<=0;
                 if(BTN_L || BTN_U || BTN_R || BTN_D)begin
-                    f_n_state = `F_GEN;
+                    f_n_state <= `F_WAIT;
                 end
                 else begin
-                    f_n_state=`F_INIT;
+                    f_n_state<=`F_INIT;
                 end
-            end
-            `F_GEN:begin
-                food_x = (food_rdm_counter % 16)*20;
-                food_y = (food_rdm_counter % 11)*20;
-                f_n_state=`F_WAIT;
             end
             `F_WAIT:begin
-                food_x=food_x;
-                food_y=food_y;
-                if((x1-food_x)*(x1-food_x)+(y1-food_y)*(y1-food_y)<1225)
-                    f_n_state=`F_GEN;
-                else if(food_x>375 || food_x<-375 || food_y >225 || food_x < -275)begin
-                    f_n_state=`F_GEN;
+                f_n_state<=`F_WAIT;
+                if((x1-food_x)*(x1-food_x)+(y1-food_y)*(y1-food_y)<1225)begin
+                    eaten<=1;
+                    food_x <= (food_rdm_counter % 16)*20;
+                    food_y <= (food_rdm_counter % 11)*20;
                 end
-                else
-                    f_n_state=`F_WAIT;
+                else if(food_x > 350 || food_x < -350 || food_y > 200 || food_y < -250)begin
+                    food_x <= (food_rdm_counter % 16)*20;
+                    food_y <= (food_rdm_counter % 11)*20;
+                    eaten<=0;
+                end
+                else begin
+                    food_x<=food_x;
+                    food_y<=food_y;
+                    eaten<=0;
+                end
             end
             default:begin
-                food_x=food_x;
-                food_y=food_y;
-                f_n_state=`F_WAIT;
+                food_x<=food_x;
+                food_y<=food_y;
+                eaten<=0;
+                f_n_state<=`F_WAIT;
             end
         endcase
     end
+    end
 //generic FSM
-always@(*)begin
+always@(posedge CLK)begin
+    if(RESET)begin
+        wen<=0;
+        g_n_state=`IDLE;
+    end
+    else begin
     case(g_c_state)
+        `INIT:begin
+            wen<=1;
+            if(refill_done)begin
+                g_n_state=`IDLE;
+            end
+            else begin
+                g_n_state=`INIT;
+            end
+        end
         `IDLE:begin
+            wen<=0;
             if(BTN_L || BTN_U || BTN_R || BTN_D )begin
                 g_n_state=`PLAY;
             end
             else  g_n_state=`IDLE;
         end
         `PLAY:begin
+            wen<=1;
             if(gg) g_n_state=`GG;
             else g_n_state=`PLAY;
         end
         `GG:begin
+            wen<=0;
             g_n_state=`GG;
         end
     endcase
 end
+end
 //snake FSM
-always @(*) begin
+always @(posedge CLK) begin
+    if(RESET)begin
+        s_n_state<=`IDLE;
+    end
+    else begin
         case(s_c_state)
             `IDLE:begin
-            wen=1;
                 if(BTN_L || BTN_U || BTN_R || BTN_D )begin
-                    s_n_state=`PLAY;
+                    s_n_state<=`PLAY;
                 end
-                else  s_n_state=`IDLE;
+                else  s_n_state<=`IDLE;
             end
             `PLAY:begin
-            wen=1;
-                if(gg)s_n_state=`GG;
-                else if(BTN_L)s_n_state=`RIGHT;
-                else if(BTN_R)s_n_state=`RIGHT;
-                else if(BTN_U)s_n_state=`UP;
-                else if(BTN_D)s_n_state=`DOWN;
-                else s_n_state=`PLAY;
+                if(gg)s_n_state<=`GG;
+                else if(BTN_L)s_n_state<=`RIGHT;
+                else if(BTN_R)s_n_state<=`RIGHT;
+                else if(BTN_U)s_n_state<=`UP;
+                else if(BTN_D)s_n_state<=`DOWN;
+                else s_n_state<=`PLAY;
             end
             `RIGHT:begin
-            wen=1;
-                if(gg)s_n_state=`GG;
-                else if(BTN_L)s_n_state=`RIGHT;
-                else if(BTN_R)s_n_state=`RIGHT;
-                else if(BTN_U)s_n_state=`UP;
-                else if(BTN_D)s_n_state=`DOWN;
-                else s_n_state=`RIGHT;
+                if(gg)s_n_state<=`GG;
+                else if(BTN_U)s_n_state<=`UP;
+                else if(BTN_D)s_n_state<=`DOWN;
+                else s_n_state<=`RIGHT;
             end
             `LEFT:begin
-            wen=1;
-                if(gg)s_n_state=`GG;
-                else if(BTN_L)s_n_state=`LEFT;
-                else if(BTN_R)s_n_state=`LEFT;
-                else if(BTN_U)s_n_state=`UP;
-                else if(BTN_D)s_n_state=`DOWN;
-                else s_n_state=`LEFT;
+                if(gg)s_n_state<=`GG;
+                else if(BTN_U)s_n_state<=`UP;
+                else if(BTN_D)s_n_state<=`DOWN;
+                else s_n_state<=`LEFT;
             end
             `UP:begin
-            wen=1;
-                if(gg)s_n_state=`GG;
-                else if(BTN_L)s_n_state=`LEFT;
-                else if(BTN_R)s_n_state=`RIGHT;
-                else if(BTN_U)s_n_state=`UP;
-                else if(BTN_D)s_n_state=`UP;
-                else s_n_state=`UP;
+                if(gg)s_n_state<=`GG;
+                else if(BTN_L)s_n_state<=`LEFT;
+                else if(BTN_R)s_n_state<=`RIGHT;
+                else s_n_state<=`UP;
             end
         `DOWN:begin
-            wen=1;
-            if(gg)s_n_state=`GG;
-            else if(BTN_L)s_n_state=`LEFT;
-            else if(BTN_R)s_n_state=`RIGHT;
-            else if(BTN_U)s_n_state=`DOWN;
-            else if(BTN_D)s_n_state=`DOWN;
-            else s_n_state=`DOWN;
+            if(gg)s_n_state<=`GG;
+            else if(BTN_L)s_n_state<=`LEFT;
+            else if(BTN_R)s_n_state<=`RIGHT;
+            else s_n_state<=`DOWN;
         end
         `GG:begin
-            wen=0;
-            s_n_state=`GG;
+            s_n_state<=`GG;
         end
         default:begin
-            wen = 0;
-            s_n_state = s_n_state;
+            s_n_state <= s_n_state;
         end
         endcase
+    end
     end
 
     //////////////// draw color ///////////////////////////
@@ -386,7 +406,7 @@ always @(*) begin
         end
         else begin
             case(g_c_state)
-                `IDLE:begin
+                `INIT:begin
                     if( x >= -250 && x < -100 && y >= -150 && y < 50 )begin
                         if(x >= -235 && x < -115 && y >= -135 && y < 35 )begin
                             color_r<=2'b01;
@@ -404,36 +424,20 @@ always @(*) begin
                     ||(x >= 0 && x < 250 && y >= -150 && y < -135)
                     ||(x >= 100 && x < 250 && y >= 55 && y < 70)
                     ||(x >= 50 && x < 125 && y >= 135 && y < 150)
-                    ||(x >= 0 && x < 50 && y >= 75 && y < 90) ) begin
-                        color_r<=2'b00;
-                        color_g<=2'b00;
-                        color_b<=2'b11;
-                    end
-                    else if ( (x >= 0 && x < 15 && y >= 35 && y < 75)
-                        ||(x >= 0 && x < 15 && y >= -150 && y < -115)
+                    ||(x >= 0 && x < 50 && y >= 75 && y < 90)
+                    ||(x >= 0 && x < 15 && y >= 35 && y < 75)
+                    ||(x >= 0 && x < 15 && y >= -150 && y < -115)
                     ||(x >= 235 && x < 250 && y >= -135 && y < 55)
                     ||(x >= 110 && x < 125 && y >= 55 && y < 150)
-                    ||(x >= 50 && x < 65 && y >= 75 && y < 150) ) begin
-                        color_r<=2'b00;
-                        color_g<=2'b00;
-                        color_b<=2'b11;
-                    end
-                    else if ( (x >= -225 && x < -210 && y >= -275 && y < -175)
-                        ||(x >= -225 && x < -135 && y >= -275 && y < -255)
-                    ||(x >= -85 && x < -50 && y >= -275 && y < -175) ) begin
-                        color_r<=2'b00;
-                        color_g<=2'b00;
-                        color_b<=2'b11;
-                    end
-                    else if ( (x >= 0 && x < 15 && y >= -275 && y < -175)
-                        ||( x+y+65 < 0 && x+y+75 >= 0 && y >= -225 && y < -175)
-                    ||( x-y+35 < 0 && x-y+45 >= 0 && y >= -275 && y < -225) ) begin
-                        color_r<=2'b00;
-                        color_g<=2'b00;
-                        color_b<=2'b11;
-                    end
-                    else if ( (x >= 120 && x < 135 && y >= -275 && y < -175)
-                        ||(x >= 135 && x < 225 && y >= -160 && y < -175)
+                    ||(x >= 50 && x < 65 && y >= 75 && y < 150)
+                    ||(x >= -225 && x < -210 && y >= -275 && y < -175)
+                    ||(x >= -225 && x < -135 && y >= -275 && y < -255)
+                    ||(x >= -85 && x < -50 && y >= -275 && y < -175)
+                    ||(x >= 0 && x < 15 && y >= -275 && y < -175)
+                    ||( x+y+65 < 0 && x+y+75 >= 0 && y >= -225 && y < -175)
+                    ||( x-y+35 < 0 && x-y+45 >= 0 && y >= -275 && y < -225)
+                    ||(x >= 120 && x < 135 && y >= -275 && y < -175)
+                    ||(x >= 135 && x < 225 && y >= -160 && y < -175)
                     ||(x >= 135 && x < 225 && y >= -240 && y < -215)
                     ||(x >= 135 && x < 225 && y >= -275 && y < -260) ) begin
                         color_r<=2'b00;
@@ -447,27 +451,11 @@ always @(*) begin
                     end
                 end
                 `PLAY:begin
-                    if((x-x1)*(x-x1)+(y-y1)*(y-y1)< `Area)begin
-                        color_r<=2'b00;
-                        color_g<=2'b11;
-                        color_b<=2'b00;
-                    end
-                    else if((x-x2)*(x-x2)+(y-y2)*(y-y2)<`Area)begin
-                        color_r<=2'b00;
-                        color_g<=2'b11;
-                        color_b<=2'b00;
-                    end
-                    else if((x-x3)*(x-x3)+(y-y3)*(y-y3)<`Area)begin
-                        color_r<=2'b00;
-                        color_g<=2'b11;
-                        color_b<=2'b00;
-                    end
-                    else if((x-x4)*(x-x4)+(y-y4)*(y-y4)<`Area)begin
-                        color_r<=2'b00;
-                        color_g<=2'b11;
-                        color_b<=2'b00;
-                    end
-                    else if((x-x5)*(x-x5)+(y-y5)*(y-y5)<`Area)begin
+                    if(((x-x1)*(x-x1)+(y-y1)*(y-y1)< `Area)
+                    ||((x-x2)*(x-x2)+(y-y2)*(y-y2) < `Area)
+                    ||((x-x3)*(x-x3)+(y-y3)*(y-y3)<`Area)
+                    ||((x-x4)*(x-x4)+(y-y4)*(y-y4)<`Area)
+                    ||((x-x5)*(x-x5)+(y-y5)*(y-y5)<`Area))begin
                         color_r<=2'b00;
                         color_g<=2'b11;
                         color_b<=2'b00;
@@ -502,7 +490,7 @@ always @(*) begin
                         color_g<=2'b00;
                         color_b<=2'b00;
                     end
-                    else if( x > -375 && x < 375 && y > -275 && y < 250 )begin
+                    else if( x > -375 && x < 375 && y > -275 && y < 220 )begin
                         color_r<=2'b00;
                         color_g<=2'b00;
                         color_b<=2'b00;
@@ -521,7 +509,23 @@ always @(*) begin
             endcase
         end
     end
-////////////////////////////////////
+
+    //socre board
+wire dec;
+wire gameover;
+wire isFilled;
+
+score_board board(
+    .clk(CLK), // clock of the fpga (100MHz)
+    .reset(RESET),
+    .add(eaten), // score will add 1 in a clock cycle if (add==1)
+        .decr(dec),
+        .gameover(gameover),
+        .x_p(x_m), // 12-bit, in screen coordinate
+        .y_p(y_m), // 12-bit, in screen coordinate
+        .isFilled(isFilled)
+    );
+//////////////////////////////////
 
 assign x=x_m - (`Width / 2);
 assign y=(`Height/2) - y_m;
@@ -569,7 +573,7 @@ always@(posedge CLK)begin
         vga_h_out_r<=1'b0;
         vga_v_out_r<=1'b0;
         s_c_state<=`IDLE;
-        g_c_state<=`IDLE;
+        g_c_state<=`INIT;
         f_c_state<=`F_INIT;
 
     end
