@@ -313,7 +313,7 @@ always @(*) begin
                 else if(BTN_R)s_n_state=`RIGHT;
                 else if(BTN_U)s_n_state=`UP;
                 else if(BTN_D)s_n_state=`DOWN;
-                else s_n_state=s_c_state;
+                else s_n_state=`RIGHT;
             end
             `LEFT:begin
             wen=1;
@@ -322,7 +322,7 @@ always @(*) begin
                 else if(BTN_R)s_n_state=`LEFT;
                 else if(BTN_U)s_n_state=`UP;
                 else if(BTN_D)s_n_state=`DOWN;
-                else s_n_state=s_c_state;
+                else s_n_state=`LEFT;
             end
             `UP:begin
             wen=1;
@@ -331,7 +331,7 @@ always @(*) begin
                 else if(BTN_R)s_n_state=`RIGHT;
                 else if(BTN_U)s_n_state=`UP;
                 else if(BTN_D)s_n_state=`UP;
-                else s_n_state=s_c_state;
+                else s_n_state=`UP;
             end
         `DOWN:begin
             wen=1;
@@ -340,7 +340,7 @@ always @(*) begin
             else if(BTN_R)s_n_state=`RIGHT;
             else if(BTN_U)s_n_state=`DOWN;
             else if(BTN_D)s_n_state=`DOWN;
-            else s_n_state=s_c_state;
+            else s_n_state=`DOWN;
         end
         `GG:begin
             wen=0;
@@ -472,27 +472,27 @@ always @(*) begin
                         color_g<=2'b11;
                         color_b<=2'b00;
                     end
-                    else if((x-x6)*(x-x6)+(y-y6)*(y-y6)<`Area)begin
+                    else if(length>5 && (x-x6)*(x-x6)+(y-y6)*(y-y6)<`Area)begin
                         color_r<=2'b00;
                         color_g<=2'b11;
                         color_b<=2'b00;
                     end
-                    else if((x-x7)*(x-x7)+(y-y7)*(y-y7)<`Area)begin
+                    else if(length>6 && (x-x7)*(x-x7)+(y-y7)*(y-y7)<`Area)begin
                         color_r<=2'b00;
                         color_g<=2'b11;
                         color_b<=2'b00;
                     end
-                    else if((x-x8)*(x-x8)+(y-y8)*(y-y8)<`Area)begin
+                    else if(length>7 && (x-x8)*(x-x8)+(y-y8)*(y-y8)<`Area)begin
                         color_r<=2'b00;
                         color_g<=2'b11;
                         color_b<=2'b00;
                     end
-                    else if((x-x9)*(x-x9)+(y-y9)*(y-y9)<`Area)begin
+                    else if(length >8 && (x-x9)*(x-x9)+(y-y9)*(y-y9)<`Area)begin
                         color_r<=2'b00;
                         color_g<=2'b11;
                         color_b<=2'b00;
                     end
-                    else if((x-x10)*(x-x10)+(y-y10)*(y-y10)<`Area)begin
+                    else if(length>9 && (x-x10)*(x-x10)+(y-y10)*(y-y10)<`Area)begin
                         color_r<=2'b00;
                         color_g<=2'b11;
                         color_b<=2'b00;
@@ -502,7 +502,7 @@ always @(*) begin
                         color_g<=2'b00;
                         color_b<=2'b00;
                     end
-                    else if( x > -375 && x < 375 && y > -275 && y < 225 )begin
+                    else if( x > -375 && x < 375 && y > -275 && y < 250 )begin
                         color_r<=2'b00;
                         color_g<=2'b00;
                         color_b<=2'b00;
@@ -513,11 +513,6 @@ always @(*) begin
                         color_b<=2'b11;
                     end
                 end
-                `GG:begin
-                        color_r<=color_r;
-                        color_g<=color_g;
-                        color_b<=color_b;
-                    end
                 default:begin
                         color_r<=color_r;
                         color_g<=color_g;
