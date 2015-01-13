@@ -525,27 +525,27 @@ always @(posedge CLK) begin
                     end
                 end
                 `GG:begin
-                    ///////LEFT_G///////
+                    ///////LEFT_G/////// //By Ellis Teng
 
-                    if(x >= -360 && x <= -320 && y <= 250 && y >= -250) begin
+                    if(x >= -360 && x <= -320 && y <= 200 && y >= -200) begin
                         color_r<=2'b11;
                         color_g<=2'b00;
                         color_b<=2'b00;
                     end
 
-                    else if(x > -320 && x <= -120 && y <= 250 && y >= 210 ) begin
+                    else if(x > -320 && x <= -120 && y <= 200 && y >= 160 ) begin
                         color_r<=2'b11;
                         color_g<=2'b00;
                         color_b<=2'b00;
                     end
 
-                    else if(x > -320 && x <= -120 && y <= -210 && y >= -250 ) begin
+                    else if(x > -320 && x <= -120 && y <= -160 && y >= -200 ) begin
                         color_r<=2'b11;
                         color_g<=2'b00;
                         color_b<=2'b00;
                     end
 
-                    else if(x >= -160 && x <= -120 && y > -210 && y <= -10 ) begin
+                    else if(x >= -160 && x <= -120 && y > -160 && y <= -10 ) begin
                         color_r<=2'b11;
                         color_g<=2'b00;
                         color_b<=2'b00;
@@ -560,25 +560,25 @@ always @(posedge CLK) begin
 
                     ///////RIGHT_G///////////
 
-                    else if(x >= 120 && x <= 160 && y <= 250 && y >= -250) begin
+                    else if(x >= 120 && x <= 160 && y <= 200 && y >= -200) begin
                         color_r<=2'b11;
                         color_g<=2'b00;
                         color_b<=2'b00;
                     end
 
-                    else if(x > 160 && x <= 360 && y <= 250 && y >= 210 ) begin
+                    else if(x > 160 && x <= 360 && y <= 200 && y >= 160 ) begin
                         color_r<=2'b11;
                         color_g<=2'b00;
                         color_b<=2'b00;
                     end
 
-                    else if(x > 160 && x <= 360 && y <= -210 && y >= -250 ) begin
+                    else if(x > 160 && x <= 360 && y <= -160 && y >= -200 ) begin
                         color_r<=2'b11;
                         color_g<=2'b00;
                         color_b<=2'b00;
                     end
 
-                    else if(x >= 3200 && x <= 360 && y > -210 && y <= -10 ) begin
+                    else if(x >= 3200 && x <= 360 && y > -160 && y <= -10 ) begin
                         color_r<=2'b11;
                         color_g<=2'b00;
                         color_b<=2'b00;
@@ -590,13 +590,122 @@ always @(posedge CLK) begin
                         color_b<=2'b00;
                     end
 
+
+                    /////TOWER////
+
+                    else if(x >= -75 && x <= 75 && y >= -280 && y <= -200) begin  //first square
+                        color_r<=2'b11;
+                        color_g<=2'b11;
+                        color_b<=2'b00;
+                    end
+
+                    else if(x >= -50 && x <= 50 && y > -200 && y <= -150) begin  //first keystone
+                        color_r<=2'b11;
+                        color_g<=2'b00;
+                        color_b<=2'b00;
+                    end
+
+                    else if(x >= -100 && x < -50 && y > -200 && y <= -150 && x-y >= 100) begin //left
+                        color_r<=2'b11;
+                        color_g<=2'b00;
+                        color_b<=2'b00;
+                    end
+
+                    else if(x > 50 && x <= 100 && y > -200 && y <= -150 && x+y <= -100) begin //right
+                        color_r<=2'b11;
+                        color_g<=2'b00;
+                        color_b<=2'b00;
+                    end
+
+                    else if(x >= -50 && x <= 50 && y > -150 && y <= -90) begin  //second square
+                        color_r<=2'b11;
+                        color_g<=2'b11;
+                        color_b<=2'b00;
+                    end
+
+                    else if(x >= -50 && x <= 50 && y > -90 && y <= -50) begin //second keystone
+                        color_r<=2'b11;
+                        color_g<=2'b00;
+                        color_b<=2'b00;
+                    end
+
+                    else if(x >= -70 && x < -50 && y > -90 && y <= -50 && 2*x-y >= -50) begin
+                        color_r<=2'b11;
+                        color_g<=2'b00;
+                        color_b<=2'b00;
+                    end
+
+                    else if(x > 50 && x <= 70 && y > -90 && y <= -50 && 2*x+y <= 50) begin
+                        color_r<=2'b11;
+                        color_g<=2'b00;
+                        color_b<=2'b00;
+                    end
+
+                    else if(x >= -50 && x <= 50 && y > -50 && y <= 10) begin //third square
+                        color_r<=2'b11;
+                        color_g<=2'b11;
+                        color_b<=2'b00;
+                    end
+
+                    else if(x >= -50 && x <= 50 && y > 10 && y <= 50) begin //third keystone
+                        color_r<=2'b11;
+                        color_g<=2'b00;
+                        color_b<=2'b00;
+                    end
+
+                    else if(x >= -70 && x < -50 && y > 10 && y <= 50 && 2*x-y >= -150) begin
+                        color_r<=2'b11;
+                        color_g<=2'b00;
+                        color_b<=2'b00;
+                    end
+
+                    else if(x > 50 && x <= 70 && y > 10 && y <= 50 && 2*x+y <= 150) begin
+                        color_r<=2'b11;
+                        color_g<=2'b00;
+                        color_b<=2'b00;
+                    end
+
+                    else if(x >= -50 && x <= 50 && y > 50 && y <= 110) begin //forth square
+                        color_r<=2'b11;
+                        color_g<=2'b11;
+                        color_b<=2'b00;
+                    end
+
+                    else if(x >= -20 && x <= 20 && y > 110 && y <= 190) begin //forth keystone
+                        color_r<=2'b11;
+                        color_g<=2'b00;
+                        color_b<=2'b00;
+                    end
+
+                    else if(x >= -60 && x <-20 && y > 110 && y <= 190 && 2*x-y >= -230) begin
+                        color_r<=2'b11;
+                        color_g<=2'b00;
+                        color_b<=2'b00;
+                    end
+
+                    else if(x > 20 && x <= 60 && y > 110 && y <= 190 && 2*x+y <= 230) begin
+                        color_r<=2'b11;
+                        color_g<=2'b00;
+                        color_b<=2'b00;
+                    end
+
+                    else if(x >= -20 && x <= 0 && y > 190 && y <= 290 && 5*x+y >= -290) begin //last
+                        color_r<=2'b11;
+                        color_g<=2'b00;
+                        color_b<=2'b00;
+                    end
+
+                    else if(x > 0 && x <= 20 && y > 190 && y <= 290 && 5*x-y >= 290) begin
+                        color_r<=2'b11;
+                        color_g<=2'b00;
+                        color_b<=2'b00;
+                    end
+
                     else begin
                         color_r<=2'b11;
                         color_g<=2'b11;
                         color_b<=2'b11;
                     end
-
-                    /////TOWER////
 
                 end
                 default:begin
