@@ -42,6 +42,10 @@ reg signed [11:0] food_x,food_y;
 reg signed [9:0] food_rdm_counter;
 reg [5:0] length;
 reg eaten;
+//socre board
+wire dec;
+wire gameover;
+wire isFilled;
 ///////////////////// write from here ////////////////////////////////////////
 //this is for generic
 `define IDLE       'd0
@@ -91,8 +95,18 @@ always@(posedge CLK)begin
     if(RESET)begin
         gg<=0;
     end
-    else if(x1 >= 375 || x1 <= -375 || y1 >= 225 || y1 <= -275)
+    else if((x1 >= 375 || x1 <= -375 || y1 >= 225 || y1 <= -275)
+        ||(x1 == x2 && y1 == y2)
+        ||(x1 == x3 && y1 == y3)
+        ||(x1 == x4 && y1 == y4)
+        ||(x1 == x5 && y1 == y5)
+        ||(x1 == x6 && y1 == y6)
+        ||(x1 == x7 && y1 == y7)
+        ||(x1 == x8 && y1 == y8)
+        ||(x1 == x9 && y1 == y9)
+        ||(x1 == x10 && y1 == y10))begin
         gg<=1;
+    end
     else begin
         gg<=0;
     end
@@ -110,10 +124,10 @@ always @(posedge snake_clk) begin
         y8<=0;
         y9<=0;
         y10<=0;
-        x1<=4*`R;
-        x2<=3*`R;
-        x3<=2*`R;
-        x4<=`R;
+        x1<=4*`Space;
+        x2<=3*`Space;
+        x3<=2*`Space;
+        x4<=`Space;
         x5<=0;
         x6<=0;
         x7<=0;
@@ -132,10 +146,10 @@ always @(posedge snake_clk) begin
                 y8<=0;
                 y9<=0;
                 y10<=0;
-                x1<=4*`R;
-                x2<=3*`R;
-                x3<=2*`R;
-                x4<=`R;
+                x1<=4*`Space;
+                x2<=3*`Space;
+                x3<=2*`Space;
+                x4<=`Space;
                 x5<=0;
                 x6<=0;
                 x7<=0;
@@ -259,12 +273,12 @@ always @(posedge CLK)begin
                 f_n_state<=`F_WAIT;
                 if((x1-food_x)*(x1-food_x)+(y1-food_y)*(y1-food_y)<1225)begin
                     eaten<=1;
-                    food_x <= (food_rdm_counter % 16)*20;
-                    food_y <= (food_rdm_counter % 11)*20;
+                    food_x <= (food_rdm_counter % 16)*`Space;
+                    food_y <= (food_rdm_counter % 11)*`Space;
                 end
                 else if(food_x > 350 || food_x < -350 || food_y > 200 || food_y < -250)begin
-                    food_x <= (food_rdm_counter % 16)*20;
-                    food_y <= (food_rdm_counter % 11)*20;
+                    food_x <= (food_rdm_counter % 16)*`Space;
+                    food_y <= (food_rdm_counter % 11)*`Space;
                     eaten<=0;
                 end
                 else begin
@@ -424,20 +438,36 @@ always @(posedge CLK) begin
                     ||(x >= 0 && x < 250 && y >= -150 && y < -135)
                     ||(x >= 100 && x < 250 && y >= 55 && y < 70)
                     ||(x >= 50 && x < 125 && y >= 135 && y < 150)
-                    ||(x >= 0 && x < 50 && y >= 75 && y < 90)
-                    ||(x >= 0 && x < 15 && y >= 35 && y < 75)
-                    ||(x >= 0 && x < 15 && y >= -150 && y < -115)
+                    ||(x >= 0 && x < 50 && y >= 75 && y < 90) ) begin
+                        color_r<=2'b00;
+                        color_g<=2'b00;
+                        color_b<=2'b11;
+                    end
+                    else if ( (x >= 0 && x < 15 && y >= 35 && y < 75)
+                        ||(x >= 0 && x < 15 && y >= -150 && y < -115)
                     ||(x >= 235 && x < 250 && y >= -135 && y < 55)
                     ||(x >= 110 && x < 125 && y >= 55 && y < 150)
-                    ||(x >= 50 && x < 65 && y >= 75 && y < 150)
-                    ||(x >= -225 && x < -210 && y >= -275 && y < -175)
-                    ||(x >= -225 && x < -135 && y >= -275 && y < -255)
-                    ||(x >= -85 && x < -50 && y >= -275 && y < -175)
-                    ||(x >= 0 && x < 15 && y >= -275 && y < -175)
-                    ||( x+y+65 < 0 && x+y+75 >= 0 && y >= -225 && y < -175)
-                    ||( x-y+35 < 0 && x-y+45 >= 0 && y >= -275 && y < -225)
-                    ||(x >= 120 && x < 135 && y >= -275 && y < -175)
-                    ||(x >= 135 && x < 225 && y >= -160 && y < -175)
+                    ||(x >= 50 && x < 65 && y >= 75 && y < 150) ) begin
+                        color_r<=2'b00;
+                        color_g<=2'b00;
+                        color_b<=2'b11;
+                    end
+                    else if ( (x >= -225 && x < -210 && y >= -275 && y < -175)
+                        ||(x >= -225 && x < -135 && y >= -275 && y < -255)
+                    ||(x >= -85 && x < -50 && y >= -275 && y < -175) ) begin
+                        color_r<=2'b00;
+                        color_g<=2'b00;
+                        color_b<=2'b11;
+                    end
+                    else if ( (x >= 0 && x < 15 && y >= -275 && y < -175)
+                        ||( x+y+200 < 0 && x+y+210 >= 0 && y >= -275 && y < -225)
+                    ||( x-y-240 > 0 && x-y-250 =< 0 && y >= -225 && y < -175) ) begin
+                        color_r<=2'b00;
+                        color_g<=2'b00;
+                        color_b<=2'b11;
+                    end
+                    else if ( (x >= 120 && x < 135 && y >= -275 && y < -175)
+                        ||(x >= 135 && x < 225 && y >= -175 && y < -160)
                     ||(x >= 135 && x < 225 && y >= -240 && y < -215)
                     ||(x >= 135 && x < 225 && y >= -275 && y < -260) ) begin
                         color_r<=2'b00;
@@ -455,32 +485,12 @@ always @(posedge CLK) begin
                     ||((x-x2)*(x-x2)+(y-y2)*(y-y2) < `Area)
                     ||((x-x3)*(x-x3)+(y-y3)*(y-y3)<`Area)
                     ||((x-x4)*(x-x4)+(y-y4)*(y-y4)<`Area)
-                    ||((x-x5)*(x-x5)+(y-y5)*(y-y5)<`Area))begin
-                        color_r<=2'b00;
-                        color_g<=2'b11;
-                        color_b<=2'b00;
-                    end
-                    else if(length>5 && (x-x6)*(x-x6)+(y-y6)*(y-y6)<`Area)begin
-                        color_r<=2'b00;
-                        color_g<=2'b11;
-                        color_b<=2'b00;
-                    end
-                    else if(length>6 && (x-x7)*(x-x7)+(y-y7)*(y-y7)<`Area)begin
-                        color_r<=2'b00;
-                        color_g<=2'b11;
-                        color_b<=2'b00;
-                    end
-                    else if(length>7 && (x-x8)*(x-x8)+(y-y8)*(y-y8)<`Area)begin
-                        color_r<=2'b00;
-                        color_g<=2'b11;
-                        color_b<=2'b00;
-                    end
-                    else if(length >8 && (x-x9)*(x-x9)+(y-y9)*(y-y9)<`Area)begin
-                        color_r<=2'b00;
-                        color_g<=2'b11;
-                        color_b<=2'b00;
-                    end
-                    else if(length>9 && (x-x10)*(x-x10)+(y-y10)*(y-y10)<`Area)begin
+                    ||((x-x5)*(x-x5)+(y-y5)*(y-y5)<`Area)
+                    ||(length>5 && (x-x6)*(x-x6)+(y-y6)*(y-y6)<`Area)
+                    ||(length>6 && (x-x7)*(x-x7)+(y-y7)*(y-y7)<`Area)
+                    ||(length>7 && (x-x8)*(x-x8)+(y-y8)*(y-y8)<`Area)
+                    ||(length >8 && (x-x9)*(x-x9)+(y-y9)*(y-y9)<`Area)
+                    ||(length>9 && (x-x10)*(x-x10)+(y-y10)*(y-y10)<`Area))begin
                         color_r<=2'b00;
                         color_g<=2'b11;
                         color_b<=2'b00;
@@ -489,6 +499,19 @@ always @(posedge CLK) begin
                         color_r<=2'b11;
                         color_g<=2'b00;
                         color_b<=2'b00;
+                    end
+                    //for score board so OP
+                    else if(x>150 && x <400&& y>220 && y<300)begin
+                        if(isFilled)begin
+                            color_r<=2'b00;
+                            color_g<=2'b00;
+                            color_b<=2'b11;
+                        end
+                        else begin
+                            color_r<=2'b11;
+                            color_g<=2'b11;
+                            color_b<=2'b11;
+                        end
                     end
                     else if( x > -375 && x < 375 && y > -275 && y < 220 )begin
                         color_r<=2'b00;
@@ -510,10 +533,8 @@ always @(posedge CLK) begin
         end
     end
 
-    //socre board
-wire dec;
-wire gameover;
-wire isFilled;
+
+//score_board module
 
 score_board board(
     .clk(CLK), // clock of the fpga (100MHz)
