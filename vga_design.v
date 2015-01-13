@@ -271,12 +271,12 @@ always @(posedge CLK)begin
             end
             `F_WAIT:begin
                 f_n_state<=`F_WAIT;
-                if((x1-food_x)*(x1-food_x)+(y1-food_y)*(y1-food_y)<1225)begin
+                if(x1==food_x && y1==food_y)begin
                     eaten<=1;
-                    food_x <= (food_rdm_counter % 16)*`Space;
-                    food_y <= (food_rdm_counter % 11)*`Space;
+                    food_x <= (food_rdm_counter % 11)*`Space;
+                    food_y <= (food_rdm_counter % 8)*`Space;
                 end
-                else if(food_x > 350 || food_x < -350 || food_y > 200 || food_y < -250)begin
+                else if(food_x > 360 || food_x < -360 || food_y > 220 || food_y < -275)begin
                     food_x <= (food_rdm_counter % 16)*`Space;
                     food_y <= (food_rdm_counter % 11)*`Space;
                     eaten<=0;
@@ -326,7 +326,7 @@ always@(posedge CLK)begin
             else g_n_state=`PLAY;
         end
         `GG:begin
-            wen<=0;
+            wen<=1;
             g_n_state=`GG;
         end
     endcase
@@ -459,9 +459,9 @@ always @(posedge CLK) begin
                         color_g<=2'b00;
                         color_b<=2'b11;
                     end
-                    else if ( (x >= 0 && x < 15 && y >= -275 && y < -175)
-                        ||( x+y+200 < 0 && x+y+210 >= 0 && y >= -275 && y < -225)
-                    ||( x-y-240 > 0 && x-y-250 =< 0 && y >= -225 && y < -175) ) begin
+                    else if ((x >= 0 && x < 15 && y >= -275 && y < -175)
+                    ||( x+y+200 < 0 && x+y+210 >= 0 && y >= -275 && y < -225)
+                    ||( x-y-240 > 0 && x-y-250 <= 0 && y >= -225 && y < -175)) begin
                         color_r<=2'b00;
                         color_g<=2'b00;
                         color_b<=2'b11;
@@ -524,27 +524,102 @@ always @(posedge CLK) begin
                         color_b<=2'b11;
                     end
                 end
+                `GG:begin
+                    ///////LEFT_G///////
+
+                    if(x >= -360 && x <= -320 && y <= 250 && y >= -250) begin
+                        color_r<=2'b11;
+                        color_g<=2'b00;
+                        color_b<=2'b00;
+                    end
+
+                    else if(x > -320 && x <= -120 && y <= 250 && y >= 210 ) begin
+                        color_r<=2'b11;
+                        color_g<=2'b00;
+                        color_b<=2'b00;
+                    end
+
+                    else if(x > -320 && x <= -120 && y <= -210 && y >= -250 ) begin
+                        color_r<=2'b11;
+                        color_g<=2'b00;
+                        color_b<=2'b00;
+                    end
+
+                    else if(x >= -160 && x <= -120 && y > -210 && y <= -10 ) begin
+                        color_r<=2'b11;
+                        color_g<=2'b00;
+                        color_b<=2'b00;
+                    end
+
+                    else if(x >= -260 && x < -160 && y >= -50 && y <= -10 ) begin
+                        color_r<=2'b11;
+                        color_g<=2'b00;
+                        color_b<=2'b00;
+                    end
+
+
+                    ///////RIGHT_G///////////
+
+                    else if(x >= 120 && x <= 160 && y <= 250 && y >= -250) begin
+                        color_r<=2'b11;
+                        color_g<=2'b00;
+                        color_b<=2'b00;
+                    end
+
+                    else if(x > 160 && x <= 360 && y <= 250 && y >= 210 ) begin
+                        color_r<=2'b11;
+                        color_g<=2'b00;
+                        color_b<=2'b00;
+                    end
+
+                    else if(x > 160 && x <= 360 && y <= -210 && y >= -250 ) begin
+                        color_r<=2'b11;
+                        color_g<=2'b00;
+                        color_b<=2'b00;
+                    end
+
+                    else if(x >= 3200 && x <= 360 && y > -210 && y <= -10 ) begin
+                        color_r<=2'b11;
+                        color_g<=2'b00;
+                        color_b<=2'b00;
+                    end
+
+                    else if(x >= 220 && x < 320 && y >= -50 && y <= -10 ) begin
+                        color_r<=2'b11;
+                        color_g<=2'b00;
+                        color_b<=2'b00;
+                    end
+
+                    else begin
+                        color_r<=2'b11;
+                        color_g<=2'b11;
+                        color_b<=2'b11;
+                    end
+
+                    /////TOWER////
+
+                end
                 default:begin
-                        color_r<=color_r;
-                        color_g<=color_g;
-                        color_b<=color_b;
+                    color_r<=color_r;
+                    color_g<=color_g;
+                    color_b<=color_b;
                 end
             endcase
         end
     end
 
 
-//score_board module
+    //score_board module
 
-score_board board(
-    .clk(CLK), // clock of the fpga (100MHz)
-    .reset(RESET),
-    .add(eaten), // score will add 1 in a clock cycle if (add==1)
-        .decr(dec),
-        .gameover(gameover),
-        .x_p(x_m), // 12-bit, in screen coordinate
-        .y_p(y_m), // 12-bit, in screen coordinate
-        .isFilled(isFilled)
+    score_board board(
+        .clk(CLK), // clock of the fpga (100MHz)
+        .reset(RESET),
+        .add(eaten), // score will add 1 in a clock cycle if (add==1)
+            .decr(dec),
+            .gameover(gameover),
+            .x_p(x_m), // 12-bit, in screen coordinate
+            .y_p(y_m), // 12-bit, in screen coordinate
+            .isFilled(isFilled)
     );
 //////////////////////////////////
 
