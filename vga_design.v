@@ -35,8 +35,8 @@ reg [5:0] g_c_state,g_n_state;
 reg refill_done;
 reg gg;
 //snake record
-reg signed [11:0] x1,x2,x3,x4,x5,x6,x7,x8,x9,x10;
-reg signed [11:0] y1,y2,y3,y4,y5,y6,y7,y8,y9,y10;
+reg signed [11:0] x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15,x16,x17,x18,x19,x20;
+reg signed [11:0] y1,y2,y3,y4,y5,y6,y7,y8,y9,y10,y11,y12,y13,y14,y15,y16,y17,y18,y19,y20;
 //food
 reg signed [11:0] food_x,food_y;
 reg signed [9:0] food_rdm_counter;
@@ -85,7 +85,7 @@ always@(posedge CLK)begin
     else if(eaten)begin
         length<=length+1;
     end
-    else if(length==10)length<=10;
+    else if(length==20)length<=20;
     else begin
         length<=length;
     end
@@ -104,7 +104,17 @@ always@(posedge CLK)begin
         ||(x1 == x7 && y1 == y7)
         ||(x1 == x8 && y1 == y8)
         ||(x1 == x9 && y1 == y9)
-        ||(x1 == x10 && y1 == y10))begin
+        ||(x1 == x10 && y1 == y10)
+        ||(x1 == x11 && y1 == y11)
+        ||(x1 == x12 && y1 == y12)
+        ||(x1 == x13 && y1 == y13)
+        ||(x1 == x14 && y1 == y14)
+        ||(x1 == x15 && y1 == y15)
+        ||(x1 == x16 && y1 == y16)
+        ||(x1 == x17 && y1 == y17)
+        ||(x1 == x18 && y1 == y18)
+        ||(x1 == x19 && y1 == y19)
+        ||(x1 == x20 && y1 == y20))begin
         gg<=1;
     end
     else begin
@@ -124,6 +134,16 @@ always @(posedge snake_clk) begin
         y8<=0;
         y9<=0;
         y10<=0;
+        y11<=0;
+        y12<=0;
+        y13<=0;
+        y14<=0;
+        y15<=0;
+        y16<=0;
+        y17<=0;
+        y18<=0;
+        y19<=0;
+        y20<=0;
         x1<=4*`Space;
         x2<=3*`Space;
         x3<=2*`Space;
@@ -134,28 +154,58 @@ always @(posedge snake_clk) begin
         x8<=0;
         x9<=0;
         x10<=0;
+        x11<=0;
+        x12<=0;
+        x13<=0;
+        x14<=0;
+        x15<=0;
+        x16<=0;
+        x17<=0;
+        x18<=0;
+        x19<=0;
+        x20<=0;
     end
         else if(s_c_state==`IDLE || s_c_state == `PLAY) begin
-                y1<=0;
-                y2<=0;
-                y3<=0;
-                y4<=0;
-                y5<=0;
-                y6<=0;
-                y7<=0;
-                y8<=0;
-                y9<=0;
-                y10<=0;
-                x1<=4*`Space;
-                x2<=3*`Space;
-                x3<=2*`Space;
-                x4<=`Space;
-                x5<=0;
-                x6<=0;
-                x7<=0;
-                x8<=0;
-                x9<=0;
-                x10<=0;
+            y1<=0;
+            y2<=0;
+            y3<=0;
+            y4<=0;
+            y5<=0;
+            y6<=0;
+            y7<=0;
+            y8<=0;
+            y9<=0;
+            y10<=0;
+            y11<=0;
+            y12<=0;
+            y13<=0;
+            y14<=0;
+            y15<=0;
+            y16<=0;
+            y17<=0;
+            y18<=0;
+            y19<=0;
+            y20<=0;
+            x1<=4*`Space;
+            x2<=3*`Space;
+            x3<=2*`Space;
+            x4<=`Space;
+            x5<=0;
+            x6<=0;
+            x7<=0;
+            x8<=0;
+            x9<=0;
+            x10<=0;
+            x11<=0;
+            x12<=0;
+            x13<=0;
+            x14<=0;
+            x15<=0;
+            x16<=0;
+            x17<=0;
+            x18<=0;
+            x19<=0;
+            x20<=0;
             end
             else begin
                 x2<=x1;
@@ -206,6 +256,86 @@ always @(posedge snake_clk) begin
                     x10<=x4;
                     y10<=y4;
                 end
+                if(length>10)begin
+                    x11<=x10;
+                    y11<=y10;
+                end
+                else begin
+                    x11<=x4;
+                    y11<=y4;
+                end
+                if(length>11)begin
+                    x12<=x11;
+                    y12<=y11;
+                end
+                else begin
+                    x12<=x4;
+                    y12<=y4;
+                end
+                if(length>12)begin
+                    x13<=x12;
+                    y13<=y12;
+                end
+                else begin
+                    x13<=x4;
+                    y13<=y4;
+                end
+                if(length>13)begin
+                    x14<=x13;
+                    y14<=y13;
+                end
+                else begin
+                    x14<=x4;
+                    y14<=y4;
+                end
+                if(length>14)begin
+                    x15<=x14;
+                    y15<=y14;
+                end
+                else begin
+                    x15<=x4;
+                    y15<=y4;
+                end
+                if(length>15)begin
+                    x16<=x15;
+                    y16<=y15;
+                end
+                else begin
+                    x16<=x4;
+                    y16<=y4;
+                end
+                if(length>16)begin
+                    x17<=x16;
+                    y17<=y16;
+                end
+                else begin
+                    x17<=x4;
+                    y17<=y4;
+                end
+                if(length>17)begin
+                    x18<=x17;
+                    y18<=y17;
+                end
+                else begin
+                    x18<=x4;
+                    y18<=y4;
+                end
+                if(length>18)begin
+                    x19<=x18;
+                    y19<=y18;
+                end
+                else begin
+                    x19<=x4;
+                    y19<=y4;
+                end
+                if(length>19)begin
+                    x20<=x19;
+                    y20<=y19;
+                end
+                else begin
+                    x20<=x4;
+                    y20<=y4;
+                end
         case(s_c_state)
             `RIGHT:begin
                 x1<=x1+`Space;
@@ -234,6 +364,16 @@ always @(posedge snake_clk) begin
             x8<=x8;
             x9<=x9;
             x10<=x10;
+            x11<=x11;
+            x12<=x12;
+            x13<=x13;
+            x14<=x14;
+            x15<=x15;
+            x16<=x16;
+            x17<=x17;
+            x18<=x18;
+            x19<=x19;
+            x20<=x20;
             y1<=y1;
             y2<=y2;
             y3<=y3;
@@ -244,6 +384,16 @@ always @(posedge snake_clk) begin
             y8<=y8;
             y9<=y9;
             y10<=y10;
+            y11<=y11;
+            y12<=y12;
+            y13<=y13;
+            y14<=y14;
+            y15<=y15;
+            y16<=y16;
+            y17<=y17;
+            y18<=y18;
+            y19<=y19;
+            y20<=y20;
         end
         endcase
     end
@@ -286,7 +436,17 @@ always @(posedge CLK)begin
                     ||(food_x==x7 && food_y == y7)
                     ||(food_x==x8 && food_y == y8)
                     ||(food_x==x9 && food_y == y9)
-                    ||(food_x==x10 && food_y == y10))begin
+                    ||(food_x==x10 && food_y == y10)
+                    ||(food_x==x11 && food_y == y11)
+                    ||(food_x==x12 && food_y == y12)
+                    ||(food_x==x13 && food_y == y13)
+                    ||(food_x==x14 && food_y == y14)
+                    ||(food_x==x15 && food_y == y15)
+                    ||(food_x==x16 && food_y == y16)
+                    ||(food_x==x17 && food_y == y17)
+                    ||(food_x==x18 && food_y == y18)
+                    ||(food_x==x19 && food_y == y19)
+                    ||(food_x==x20 && food_y == y20))begin
                     food_x <= (food_rdm_counter % 16)*`Space;
                     food_y <= (food_rdm_counter % 11)*`Space;
                     eaten<=0;
@@ -490,7 +650,7 @@ always @(posedge CLK) begin
                         color_b<=2'b11;
                     end
                 end
-                `PLAY:begin
+                `PLAY:begin //draw the snake
                     if(((x-x1)*(x-x1)+(y-y1)*(y-y1)< `Area)
                     ||((x-x2)*(x-x2)+(y-y2)*(y-y2) < `Area)
                     ||((x-x3)*(x-x3)+(y-y3)*(y-y3)<`Area)
@@ -500,7 +660,17 @@ always @(posedge CLK) begin
                     ||(length>6 && (x-x7)*(x-x7)+(y-y7)*(y-y7)<`Area)
                     ||(length>7 && (x-x8)*(x-x8)+(y-y8)*(y-y8)<`Area)
                     ||(length >8 && (x-x9)*(x-x9)+(y-y9)*(y-y9)<`Area)
-                    ||(length>9 && (x-x10)*(x-x10)+(y-y10)*(y-y10)<`Area))begin
+                    ||(length>9 && (x-x10)*(x-x10)+(y-y10)*(y-y10)<`Area)
+                    ||(length>10 && (x-x11)*(x-x11)+(y-y11)*(y-y11)<`Area)
+                    ||(length>11 && (x-x12)*(x-x12)+(y-y12)*(y-y12)<`Area)
+                    ||(length>12 && (x-x13)*(x-x13)+(y-y13)*(y-y13)<`Area)
+                    ||(length>13 && (x-x14)*(x-x14)+(y-y14)*(y-y14)<`Area)
+                    ||(length>14 && (x-x15)*(x-x15)+(y-y15)*(y-y15)<`Area)
+                    ||(length>15 && (x-x16)*(x-x16)+(y-y16)*(y-y16)<`Area)
+                    ||(length>16 && (x-x17)*(x-x17)+(y-y17)*(y-y17)<`Area)
+                    ||(length>17 && (x-x18)*(x-x18)+(y-y18)*(y-y18)<`Area)
+                    ||(length>18 && (x-x19)*(x-x19)+(y-y19)*(y-y19)<`Area)
+                    ||(length>19 && (x-x20)*(x-x20)+(y-y20)*(y-y20)<`Area))begin
                         if(SW[0])begin
                             {color_r,color_g,color_b}<=6'b111111;
                         end
