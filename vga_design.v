@@ -276,7 +276,17 @@ always @(posedge CLK)begin
                     food_x <= (food_rdm_counter % 11)*`Space;
                     food_y <= (food_rdm_counter % 8)*`Space;
                 end
-                else if(food_x > 360 || food_x < -360 || food_y > 220 || food_y < -275)begin
+                else if((food_x > 360 || food_x < -360 || food_y > 220 || food_y < -275)
+                    ||(food_x==x1 && food_y == y1)
+                    ||(food_x==x2 && food_y == y2)
+                    ||(food_x==x3 && food_y == y3)
+                    ||(food_x==x4 && food_y == y4)
+                    ||(food_x==x5 && food_y == y5)
+                    ||(food_x==x6 && food_y == y6)
+                    ||(food_x==x7 && food_y == y7)
+                    ||(food_x==x8 && food_y == y8)
+                    ||(food_x==x9 && food_y == y9)
+                    ||(food_x==x10 && food_y == y10))begin
                     food_x <= (food_rdm_counter % 16)*`Space;
                     food_y <= (food_rdm_counter % 11)*`Space;
                     eaten<=0;
@@ -491,9 +501,12 @@ always @(posedge CLK) begin
                     ||(length>7 && (x-x8)*(x-x8)+(y-y8)*(y-y8)<`Area)
                     ||(length >8 && (x-x9)*(x-x9)+(y-y9)*(y-y9)<`Area)
                     ||(length>9 && (x-x10)*(x-x10)+(y-y10)*(y-y10)<`Area))begin
-                        color_r<=2'b00;
-                        color_g<=2'b11;
-                        color_b<=2'b00;
+                        if(SW[0])begin
+                            {color_r,color_g,color_b}<=6'b111111;
+                        end
+                        else begin
+                            {color_r,color_g,color_b}<=6'b001100;
+                        end
                     end
                     else if((x-food_x)*(x-food_x)+(y-food_y)*(y-food_y)<225)begin
                         color_r<=2'b11;
