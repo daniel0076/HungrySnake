@@ -12,7 +12,7 @@ module vga_design( CLK,pause,speed_ctrl,snake_color_ctrl,boot,BTN_L,BTN_R,BTN_U,
 input CLK;
 input BTN_D,BTN_R,BTN_L,BTN_U;
 input pause;
-input speed_ctrl[1:0];
+input [1:0] speed_ctrl;
 input snake_color_ctrl;
 input boot;
 output reg vga_h_out_r,vga_v_out_r;
@@ -76,8 +76,8 @@ always @(negedge CLK) begin
         // reset
     vga_clk <= 1'b0;
     else begin
-		vga_clk<=~vga_clk;
-	end
+        vga_clk<=~vga_clk;
+    end
 end
 always @(posedge CLK) begin
     if (RESET)begin
@@ -90,72 +90,73 @@ always @(posedge CLK) begin
 end
 // count for snake
 always@(*) begin
-	// can be change by giving differnt value
-	case(speed_ctrl)
-		2'b00: snake_wait=32'd100000000;//d100000000; // 1Hz
-		2'b01: snake_wait=32'd83333333; // approx. 1.2Hz
-		2'b10: snake_wait=32'd66666666; // approx. 1.5Hz
-		2'b11: snake_wait=32'd50000000; // 2Hz
-	endcase
+    // can be change by giving differnt value
+    case(speed_ctrl)
+        2'b00: snake_wait=32'd100000000;//d100000000; // 1Hz
+        2'b01: snake_wait=32'd83333333; // approx. 1.2Hz
+        2'b10: snake_wait=32'd66666666; // approx. 1.5Hz
+        2'b11: snake_wait=32'd50000000; // 2Hz
+        default:snake_wait=32'd100000000;
+    endcase
 end
 always @(negedge CLK) begin
     if (RESET) begin
         // reset
-		counter <= 32'd0;
-		snake_clk<=1'b0;
-	end
-	else if(pause) begin
-		counter<=32'd0;
-		snake_clk<=1'b0;
-	end
+        counter <= 32'd0;
+        snake_clk<=1'b0;
+    end
+    else if(pause) begin
+        counter<=32'd0;
+        snake_clk<=1'b0;
+    end
     else begin
-		case(g_c_state)
-			`UP: begin
-				if(counter>=snake_wait) begin
-					counter<=32'd0;
-					snake_clk<=1'b1;
-				end
-				else begin
-					counter <= counter + 32'd1;
-					snake_clk<=1'b0;
-				end
-			end
-			`DOWN: begin
-				if(counter>=snake_wait) begin
-					counter<=32'd0;
-					snake_clk<=1'b1;
-				end
-				else begin
-					counter <= counter + 32'd1;
-					snake_clk<=1'b0;
-				end
-			end
-			`RIGHT: begin
-				if(counter>=snake_wait) begin
-					counter<=32'd0;
-					snake_clk<=1'b1;
-				end
-				else begin
-					counter <= counter + 32'd1;
-					snake_clk<=1'b0;
-				end
-			end
-			`LEFT: begin
-				if(counter>=snake_wait) begin
-					counter<=32'd0;
-					snake_clk<=1'b1;
-				end
-				else begin
-					counter <= counter + 32'd1;
-					snake_clk<=1'b0;
-				end
-			end
-			default: begin
-				counter <= 32'd0;
-				snake_clk<=1'b0;
-			end
-		endcase
-	end
+        case(g_c_state)
+            `UP: begin
+                if(counter>=snake_wait) begin
+                    counter<=32'd0;
+                    snake_clk<=1'b1;
+                end
+                else begin
+                    counter <= counter + 32'd1;
+                    snake_clk<=1'b0;
+                end
+            end
+            `DOWN: begin
+                if(counter>=snake_wait) begin
+                    counter<=32'd0;
+                    snake_clk<=1'b1;
+                end
+                else begin
+                    counter <= counter + 32'd1;
+                    snake_clk<=1'b0;
+                end
+            end
+            `RIGHT: begin
+                if(counter>=snake_wait) begin
+                    counter<=32'd0;
+                    snake_clk<=1'b1;
+                end
+                else begin
+                    counter <= counter + 32'd1;
+                    snake_clk<=1'b0;
+                end
+            end
+            `LEFT: begin
+                if(counter>=snake_wait) begin
+                    counter<=32'd0;
+                    snake_clk<=1'b1;
+                end
+                else begin
+                    counter <= counter + 32'd1;
+                    snake_clk<=1'b0;
+                end
+            end
+            default: begin
+                counter <= 32'd0;
+                snake_clk<=1'b0;
+            end
+        endcase
+    end
 end
 //length control
 always@(posedge CLK)begin
