@@ -74,9 +74,12 @@ NET BTN_D                 LOC = R16  | IOSTANDARD=LVCMOS18;  # "DOWN"
 NET BTN_L          		  LOC = N15  | IOSTANDARD=LVCMOS18;  # "LEFT"
 NET BTN_R                 LOC = R18  | IOSTANDARD=LVCMOS18;  # "RIGHT"
 
-NET SW[0]                 LOC = F22  | IOSTANDARD=LVCMOS18;  # "SW[0]"
-
+NET pause           LOC = F22  | IOSTANDARD=LVCMOS18;  # "SW0"
+NET speed_ctrl[0]           LOC = G22  | IOSTANDARD=LVCMOS18;  # "SW1"
+NET speed_ctrl[1]           LOC = H22  | IOSTANDARD=LVCMOS18;  # "SW2"
+NET snake_color_ctrl           LOC = H17  | IOSTANDARD=LVCMOS18;  # "SW6"
+NET boot           LOC = M15  | IOSTANDARD=LVCMOS18;  # "SW7"
 
 # Bank 34, Vcco = Vadj
-NET RESET          		  LOC = P16  | IOSTANDARD=LVCMOS18;  # "BTNC"
+//NET RESET          		  LOC = P16  | IOSTANDARD=LVCMOS18;  # "BTNC"
 
