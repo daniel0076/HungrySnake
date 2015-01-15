@@ -104,6 +104,10 @@ always @(negedge CLK) begin
 		counter <= 32'd0;
 		snake_clk<=1'b0;
 	end
+	else if(pause) begin
+		counter<=32'd0;
+		snake_clk<=1'b0;
+	end
     else begin
 		case(g_c_state)
 			`UP: begin
