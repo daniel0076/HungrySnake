@@ -81,5 +81,5 @@ NET snake_color_ctrl           LOC = H17  | IOSTANDARD=LVCMOS18;  # "SW6"
 NET boot           LOC = M15  | IOSTANDARD=LVCMOS18;  # "SW7"
 
 # Bank 34, Vcco = Vadj
-NET RESET          		  LOC = P16  | IOSTANDARD=LVCMOS18;  # "BTNC"
+//NET RESET          		  LOC = P16  | IOSTANDARD=LVCMOS18;  # "BTNC"
 
