@@ -71,7 +71,7 @@ wire isFilled;
 // Drawing FSM
 
 ///////////////////// counter /////////////////////////
-always @(negedge CLK) begin
+always @(posedge CLK) begin
     if (RESET)
         // reset
     vga_clk <= 1'b0;
@@ -92,14 +92,14 @@ end
 always@(*) begin
     // can be change by giving differnt value
     case(speed_ctrl)
-        2'b00: snake_wait=32'd100000000;//d100000000; // 1Hz
-        2'b01: snake_wait=32'd83333333; // approx. 1.2Hz
-        2'b10: snake_wait=32'd66666666; // approx. 1.5Hz
-        2'b11: snake_wait=32'd50000000; // 2Hz
-        default:snake_wait=32'd100000000;
+        2'b00: snake_wait=32'd66666666; // approx. 1.5Hz
+        2'b01: snake_wait=32'd50000000; // approx. 2Hz
+        2'b10: snake_wait=32'd33333333; // 3Hz
+        2'b11: snake_wait=32'd25000000; // 4Hz
+        default:snake_wait=32'd66666666;
     endcase
 end
-always @(negedge CLK) begin
+always @(posedge CLK) begin
     if (RESET) begin
         // reset
         counter <= 32'd0;
