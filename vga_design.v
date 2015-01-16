@@ -172,11 +172,11 @@ end
 //sanke control
 always @(posedge CLK) begin
     if (RESET)begin
-        y1<=0;
-        y2<=0;
-        y3<=0;
-        y4<=0;
-        y5<=0;
+        y1<=-(12'd3)*`Space;
+        y2<=-(12'd3)*`Space;
+        y3<=-(12'd3)*`Space;
+        y4<=-(12'd3)*`Space;
+        y5<=-(12'd3)*`Space;
         y6<=0;
         y7<=0;
         y8<=0;
@@ -215,11 +215,11 @@ always @(posedge CLK) begin
     end
     else if(snake_clk) begin
         if(s_c_state==`IDLE || s_c_state == `PLAY) begin
-            y1<=0;
-            y2<=0;
-            y3<=0;
-            y4<=0;
-            y5<=0;
+            y1<=-(12'd3)*`Space;
+            y2<=-(12'd3)*`Space;
+            y3<=-(12'd3)*`Space;
+            y4<=-(12'd3)*`Space;
+            y5<=-(12'd3)*`Space;
             y6<=0;
             y7<=0;
             y8<=0;
