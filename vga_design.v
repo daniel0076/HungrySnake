@@ -746,14 +746,14 @@ always @(posedge CLK) begin
                             color_b<=2'b11;
                         end
                     end
+                    //for obstacle
+                    else if( x > -2*`Space && x < 2*`Space && y > -2*`Space && y < 2*`Space )begin
+                            {color_r,color_g,color_b}<=6'b011101;
+                    end
                     else if( x > -375 && x < 375 && y > -275 && y < 220 )begin
                         color_r<=2'b00;
                         color_g<=2'b00;
                         color_b<=2'b00;
-                    end
-                    //for obstacle
-                    else if( x > -2*`Space && x < 2*`Space && y > -2*`Space && y < 2*`Space )begin
-                            {color_r,color_g,color_b}<=6'b011101;
                     end
                     else begin
                         color_r<=2'b11;
