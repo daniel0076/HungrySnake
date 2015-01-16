@@ -138,6 +138,7 @@ always@(posedge CLK)begin
     if(RESET)begin
         gg<=0;
     end
+    //eat self death
     else if((x1 >= 375 || x1 <= -375 || y1 >= 225 || y1 <= -275)
         ||(x1 == x2 && y1 == y2)
         ||(x1 == x3 && y1 == y3)
@@ -158,6 +159,10 @@ always@(posedge CLK)begin
         ||(x1 == x18 && y1 == y18)
         ||(x1 == x19 && y1 == y19)
         ||(x1 == x20 && y1 == y20))begin
+        gg<=1;
+    end
+    //obstacle death
+    else if(x1>-2*`Space && x1<2*`Space && y1>-2*`Space && y1<2*`Space)begin
         gg<=1;
     end
     else begin
@@ -208,7 +213,7 @@ always @(posedge CLK) begin
         x19<=0;
         x20<=0;
     end
-	else if(snake_clk) begin
+    else if(snake_clk) begin
         if(s_c_state==`IDLE || s_c_state == `PLAY) begin
             y1<=0;
             y2<=0;
@@ -250,198 +255,198 @@ always @(posedge CLK) begin
             x18<=0;
             x19<=0;
             x20<=0;
-		end
-		else begin
-			x2<=x1;
-			x3<=x2;
-			x4<=x3;
-			x5<=x4;
-			y2<=y1;
-			y3<=y2;
-			y4<=y3;
-			y5<=y4;
-			if(length>5)begin
-				x6<=x5;
-				y6<=y5;
-			end
-			else begin
-				x6<=x4;
-				y6<=y4;
-			end
-			if(length>6)begin
-				x7<=x6;
-				y7<=y6;
-			end
-			else begin
-				x7<=x4;
-				y7<=y4;
-			end
-			if(length>7)begin
-				x8<=x7;
-				y8<=y7;
-			end
-			else begin
-				x8<=x4;
-				y8<=y4;
-			end
-			if(length>8)begin
-				x9<=x8;
-				y9<=y8;
-			end
-			else begin
-				x9<=x4;
-				y9<=y4;
-			end
-			if(length>9)begin
-				x10<=x9;
-				y10<=y9;
-			end
-			else begin
-				x10<=x4;
-				y10<=y4;
-			end
-			if(length>10)begin
-				x11<=x10;
-				y11<=y10;
-			end
-			else begin
-				x11<=x4;
-				y11<=y4;
-			end
-			if(length>11)begin
-				x12<=x11;
-				y12<=y11;
-			end
-			else begin
-				x12<=x4;
-				y12<=y4;
-			end
-			if(length>12)begin
-				x13<=x12;
-				y13<=y12;
-			end
-			else begin
-				x13<=x4;
-				y13<=y4;
-			end
-			if(length>13)begin
-				x14<=x13;
-				y14<=y13;
-			end
-			else begin
-				x14<=x4;
-				y14<=y4;
-			end
-			if(length>14)begin
-				x15<=x14;
-				y15<=y14;
-			end
-			else begin
-				x15<=x4;
-				y15<=y4;
-			end
-			if(length>15)begin
-				x16<=x15;
-				y16<=y15;
-			end
-			else begin
-				x16<=x4;
-				y16<=y4;
-			end
-			if(length>16)begin
-				x17<=x16;
-				y17<=y16;
-			end
-			else begin
-				x17<=x4;
-				y17<=y4;
-			end
-			if(length>17)begin
-				x18<=x17;
-				y18<=y17;
-			end
-			else begin
-				x18<=x4;
-				y18<=y4;
-			end
-			if(length>18)begin
-				x19<=x18;
-				y19<=y18;
-			end
-			else begin
-				x19<=x4;
-				y19<=y4;
-			end
-			if(length>19)begin
-				x20<=x19;
-				y20<=y19;
-			end
-			else begin
-				x20<=x4;
-				y20<=y4;
-			end
-			case(s_c_state)
-				`RIGHT:begin
-					x1<=x1+`Space;
-					y1<=y1;
-				end
-				`LEFT:begin
-					x1<=x1-`Space;
-					y1<=y1;
-				end
-				`UP:begin
-					x1<=x1;
-					y1<=y1+`Space;
-				end
-				`DOWN:begin
-					x1<=x1;
-					y1<=y1-`Space;
-				end
-				default:begin
-					x1<=x1;
-					x2<=x2;
-					x3<=x3;
-					x4<=x4;
-					x5<=x5;
-					x6<=x6;
-					x7<=x7;
-					x8<=x8;
-					x9<=x9;
-					x10<=x10;
-					x11<=x11;
-					x12<=x12;
-					x13<=x13;
-					x14<=x14;
-					x15<=x15;
-					x16<=x16;
-					x17<=x17;
-					x18<=x18;
-					x19<=x19;
-					x20<=x20;
-					y1<=y1;
-					y2<=y2;
-					y3<=y3;
-					y4<=y4;
-					y5<=y5;
-					y6<=y6;
-					y7<=y7;
-					y8<=y8;
-					y9<=y9;
-					y10<=y10;
-					y11<=y11;
-					y12<=y12;
-					y13<=y13;
-					y14<=y14;
-					y15<=y15;
-					y16<=y16;
-					y17<=y17;
-					y18<=y18;
-					y19<=y19;
-					y20<=y20;
-				end
-			endcase
-		end
-	end
+        end
+        else begin
+            x2<=x1;
+            x3<=x2;
+            x4<=x3;
+            x5<=x4;
+            y2<=y1;
+            y3<=y2;
+            y4<=y3;
+            y5<=y4;
+            if(length>5)begin
+                x6<=x5;
+                y6<=y5;
+            end
+            else begin
+                x6<=x4;
+                y6<=y4;
+            end
+            if(length>6)begin
+                x7<=x6;
+                y7<=y6;
+            end
+            else begin
+                x7<=x4;
+                y7<=y4;
+            end
+            if(length>7)begin
+                x8<=x7;
+                y8<=y7;
+            end
+            else begin
+                x8<=x4;
+                y8<=y4;
+            end
+            if(length>8)begin
+                x9<=x8;
+                y9<=y8;
+            end
+            else begin
+                x9<=x4;
+                y9<=y4;
+            end
+            if(length>9)begin
+                x10<=x9;
+                y10<=y9;
+            end
+            else begin
+                x10<=x4;
+                y10<=y4;
+            end
+            if(length>10)begin
+                x11<=x10;
+                y11<=y10;
+            end
+            else begin
+                x11<=x4;
+                y11<=y4;
+            end
+            if(length>11)begin
+                x12<=x11;
+                y12<=y11;
+            end
+            else begin
+                x12<=x4;
+                y12<=y4;
+            end
+            if(length>12)begin
+                x13<=x12;
+                y13<=y12;
+            end
+            else begin
+                x13<=x4;
+                y13<=y4;
+            end
+            if(length>13)begin
+                x14<=x13;
+                y14<=y13;
+            end
+            else begin
+                x14<=x4;
+                y14<=y4;
+            end
+            if(length>14)begin
+                x15<=x14;
+                y15<=y14;
+            end
+            else begin
+                x15<=x4;
+                y15<=y4;
+            end
+            if(length>15)begin
+                x16<=x15;
+                y16<=y15;
+            end
+            else begin
+                x16<=x4;
+                y16<=y4;
+            end
+            if(length>16)begin
+                x17<=x16;
+                y17<=y16;
+            end
+            else begin
+                x17<=x4;
+                y17<=y4;
+            end
+            if(length>17)begin
+                x18<=x17;
+                y18<=y17;
+            end
+            else begin
+                x18<=x4;
+                y18<=y4;
+            end
+            if(length>18)begin
+                x19<=x18;
+                y19<=y18;
+            end
+            else begin
+                x19<=x4;
+                y19<=y4;
+            end
+            if(length>19)begin
+                x20<=x19;
+                y20<=y19;
+            end
+            else begin
+                x20<=x4;
+                y20<=y4;
+            end
+            case(s_c_state)
+                `RIGHT:begin
+                    x1<=x1+`Space;
+                    y1<=y1;
+                end
+                `LEFT:begin
+                    x1<=x1-`Space;
+                    y1<=y1;
+                end
+                `UP:begin
+                    x1<=x1;
+                    y1<=y1+`Space;
+                end
+                `DOWN:begin
+                    x1<=x1;
+                    y1<=y1-`Space;
+                end
+                default:begin
+                    x1<=x1;
+                    x2<=x2;
+                    x3<=x3;
+                    x4<=x4;
+                    x5<=x5;
+                    x6<=x6;
+                    x7<=x7;
+                    x8<=x8;
+                    x9<=x9;
+                    x10<=x10;
+                    x11<=x11;
+                    x12<=x12;
+                    x13<=x13;
+                    x14<=x14;
+                    x15<=x15;
+                    x16<=x16;
+                    x17<=x17;
+                    x18<=x18;
+                    x19<=x19;
+                    x20<=x20;
+                    y1<=y1;
+                    y2<=y2;
+                    y3<=y3;
+                    y4<=y4;
+                    y5<=y5;
+                    y6<=y6;
+                    y7<=y7;
+                    y8<=y8;
+                    y9<=y9;
+                    y10<=y10;
+                    y11<=y11;
+                    y12<=y12;
+                    y13<=y13;
+                    y14<=y14;
+                    y15<=y15;
+                    y16<=y16;
+                    y17<=y17;
+                    y18<=y18;
+                    y19<=y19;
+                    y20<=y20;
+                end
+            endcase
+        end
+    end
 end
 //food FSM
 always @(posedge CLK)begin
@@ -745,6 +750,10 @@ always @(posedge CLK) begin
                         color_r<=2'b00;
                         color_g<=2'b00;
                         color_b<=2'b00;
+                    end
+                    //for obstacle
+                    else if( x > -2*`Space && x < 2*`Space && y > -2*`Space && y < 2*`Space )begin
+                            {color_r,color_g,color_b}<=6'b011101;
                     end
                     else begin
                         color_r<=2'b11;
