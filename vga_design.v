@@ -50,7 +50,7 @@ reg signed [9:0] food_rdm_counter;
 reg [5:0] length;
 reg eaten;
 //socre board
-wire dec;
+reg dec;
 wire gameover;
 wire isFilled;
 ///////////////////// write from here ////////////////////////////////////////
@@ -59,6 +59,7 @@ wire isFilled;
 `define PLAY       'd1
 `define GG         'd2
 `define INIT       'd3
+`define temp_GG    'd8
 //this is for snake
 `define RIGHT       'd4
 `define LEFT        'd5
@@ -544,8 +545,13 @@ always@(posedge CLK)begin
         end
         `PLAY:begin
             wen<=1;
-            if(gg) g_n_state=`GG;
+            if(gg) g_n_state=`temp_GG;
             else g_n_state=`PLAY;
+        end
+        `temp_GG:begin
+            wen<=1;
+            if(gameover) g_n_state=`GG;
+            else g_n_state=`temp_GG;
         end
         `GG:begin
             wen<=1;
@@ -962,7 +968,8 @@ always @(posedge CLK) begin
         .clk(CLK), // clock of the fpga (100MHz)
         .reset(RESET),
         .add(eaten), // score will add 1 in a clock cycle if (add==1)
-            .decr(dec),
+		.isDecresing(g_c_state==`temp_GG),
+            .decr(snake_clk),
             .gameover(gameover),
             .x_p(x_m), // 12-bit, in screen coordinate
             .y_p(y_m), // 12-bit, in screen coordinate
