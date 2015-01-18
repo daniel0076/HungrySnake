@@ -30,10 +30,10 @@ Verilog貪吃蛇
     + SW6切換青蛇或白蛇
 
 ### Screen Shot
-!(https://raw.githubusercontent.com/daniel0076/HungrySnake/master/screenshot/welcome.jpg)
-!(https://raw.githubusercontent.com/daniel0076/HungrySnake/master/screenshot/gameplay1.jpg)
-!(https://raw.githubusercontent.com/daniel0076/HungrySnake/master/screenshot/gameplay2.jpg)
-!(https://raw.githubusercontent.com/daniel0076/HungrySnake/master/screenshot/GG.jpg)
+![welcome](https://raw.githubusercontent.com/daniel0076/HungrySnake/master/screenshot/welcome.jpg)
+![gameplay1](https://raw.githubusercontent.com/daniel0076/HungrySnake/master/screenshot/gameplay1.jpg)
+![gameplay2](https://raw.githubusercontent.com/daniel0076/HungrySnake/master/screenshot/gameplay2.jpg)
+![GG](https://raw.githubusercontent.com/daniel0076/HungrySnake/master/screenshot/GG.jpg)
 
 ### Cowokers
 + Ellis Teng
