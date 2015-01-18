@@ -30,7 +30,10 @@ Verilog貪吃蛇
     + SW6切換青蛇或白蛇
 
 ### Screen Shot
-+ coming soon
+    + !(screenshot/welcome.jpg)
+    + !(screenshot/gameplay1.jpg)
+    + !(screenshot/gameplay2.jpg)
+    + !(screenshot/gg.jpg)
 
 ### Cowokers
 + Ellis Teng
