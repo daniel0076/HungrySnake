@@ -496,7 +496,9 @@ always @(posedge CLK)begin
                     ||(food_x==x17 && food_y == y17)
                     ||(food_x==x18 && food_y == y18)
                     ||(food_x==x19 && food_y == y19)
-                    ||(food_x==x20 && food_y == y20))begin
+                    ||(food_x==x20 && food_y == y20)
+                    ||(food_x>-2*`Space && food_x<2*`Space && food_y>-2*`Space && food_y<2*`Space))
+                begin
                     food_x <= (food_rdm_counter % 16)*`Space;
                     food_y <= (food_rdm_counter % 11)*`Space;
                     eaten<=0;
@@ -748,7 +750,7 @@ always @(posedge CLK) begin
                     end
                     //for obstacle
                     else if( x > -2*`Space && x < 2*`Space && y > -2*`Space && y < 2*`Space )begin
-                            {color_r,color_g,color_b}<=6'b011101;
+                            {color_r,color_g,color_b}<=6'b010101;
                     end
                     else if( x > -375 && x < 375 && y > -275 && y < 220 )begin
                         color_r<=2'b00;
