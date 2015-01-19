@@ -35,6 +35,8 @@ Hungry Snake by Verilog
     + SW6 switch the color of the snake
         + SW6=0 : green snake
         + SW6=1 : white snake
+    + Death control
+        #### If you hit the wall or the obtacle, you will die
 
 ### Screen Shots
 ![FPGA](https://raw.githubusercontent.com/daniel0076/HungrySnake/master/screenshot/board.jpg)
