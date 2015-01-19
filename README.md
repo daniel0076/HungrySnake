@@ -1,39 +1,50 @@
-Verilog貪吃蛇
+Hungry Snake by Verilog
 ===
-### Module 說明
-+ 開發板
-    + 使用Zedboard Zynq z7020
+### Module Description
++ FPGA Board
+    + Zedboard Zynq z7020
     + CPU:CLG484
     + speed:-1
     + System Clock:100MHz
 + vga_design.v
-    + 貪吃蛇主要module
+    + Main module of Hungry Snake
 + vga_out.v
-    + VGA輸出module
+    + VGA out module
     + Resolutin:800x600@75Hz
 + score_board.v
-    + 計分板模組
-+ memory
-    + 畫面色彩memory
-        + 800x600x6 bits
-    + 計分板數字pattern
-        + Unknown
-+ .ucf為接線配置檔
-    + SW7作為開關(0: RESET=1)
-    + 上下左右控制蛇身
-    + SW0切換遊戲暫停或開始（1: 暫停）
-    + {SW2,SW1}控制蛇的速度
-        + 2'b00: 1Hz
-        + 2'b01: 1.2Hz
-        + 2'b10: 1.5Hz
-        + 2'b11: 2Hz
-    + SW6切換青蛇或白蛇
+    + The score board module
+    + Using memory digit patterns
++ Block Memory
+    + Screen color memory
+        + 800x600x6 bits RGB
+    + Digit pattern memory
+        + 80x60x10 bits
++ How to play
+    + SW7 is the RESET switch
+        + SW7=0 : RESET
+        + SW7=1 : Play
+    + Use the four direction buttons to control the snake
+    + SW0 is the Pause switch
+        + SW0=0 : Play
+        + SW0=1 : Pause
+    + {SW2,SW1} Can change the speed of the snake
+        + 2'b00: 1.5Hz
+        + 2'b01: 2Hz
+        + 2'b10: 3Hz
+        + 2'b11: 4Hz
+    + SW6 switch the color of the snake
+        + SW6=0 : green snake
+        + SW6=1 : white snake
 
-### Screen Shot
-+ coming soon
+### Screen Shots
+![FPGA](https://raw.githubusercontent.com/daniel0076/HungrySnake/master/screenshot/board.jpg)
+![welcome](https://raw.githubusercontent.com/daniel0076/HungrySnake/master/screenshot/welcome.jpg)
+![gameplay1](https://raw.githubusercontent.com/daniel0076/HungrySnake/master/screenshot/gameplay1.jpg)
+![gameplay2](https://raw.githubusercontent.com/daniel0076/HungrySnake/master/screenshot/gameplay2.jpg)
+![GG](https://raw.githubusercontent.com/daniel0076/HungrySnake/master/screenshot/GG.jpg)
 
 ### Cowokers
 + Ellis Teng
-+ Jeff Huang
-+ Yujun Wang
-+ Daniel Tsai
++ Jeff Huang(Dinglet)
++ Yujun Wang(YuJunWang)
++ Daniel Tsai(daniel0076)
