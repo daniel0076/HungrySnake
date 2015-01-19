@@ -31,7 +31,7 @@ module score_board(
     //input clk_change,
 	//input [3:0] addend; 
     input add, // score will add 1 in a clock cycle if (add==1)
-	//input isDecresing,
+	input isDecresing,
     input decr,
 	output reg gameover,
 	//
@@ -107,7 +107,7 @@ wire dout_mem;
 always@(posedge clk) begin
 	if(reset)
 		gameover<=1'b0;
-	else if (decr && one_score)
+	else if ((isDecresing&&decr) && (one_score||zero_score))
 		gameover<=1'b1;
 	else
 		gameover<=gameover;
@@ -125,7 +125,7 @@ always@(posedge clk) begin
 		score[1]<=4'd0;
 		score[0]<=4'd0;
 	end
-	else if(decr) begin
+	else if(isDecresing&decr) begin
 		if(|score[0]) begin // no borrow
 			score[0]<=score[0]-4'd1;
 		end

@@ -50,7 +50,7 @@ reg signed [9:0] food_rdm_counter;
 reg [5:0] length;
 reg eaten;
 //socre board
-wire dec;
+reg dec;
 wire gameover;
 wire isFilled;
 ///////////////////// write from here ////////////////////////////////////////
@@ -59,6 +59,7 @@ wire isFilled;
 `define PLAY       'd1
 `define GG         'd2
 `define INIT       'd3
+`define temp_GG    'd8
 //this is for snake
 `define RIGHT       'd4
 `define LEFT        'd5
@@ -544,8 +545,13 @@ always@(posedge CLK)begin
         end
         `PLAY:begin
             wen<=1;
-            if(gg) g_n_state<=`GG;
+            if(gg) g_n_state<=`temp_GG;
             else g_n_state<=`PLAY;
+        end
+        `temp_GG:begin
+            wen<=1;
+            if(gameover) g_n_state<=`GG;
+            else g_n_state<=`temp_GG;
         end
         `GG:begin
             wen<=1;
@@ -703,6 +709,67 @@ always @(posedge CLK) begin
                     end
                 end
                 `PLAY:begin //draw the snake
+                    if(((x-x1)*(x-x1)+(y-y1)*(y-y1)< `Area)
+                    ||((x-x2)*(x-x2)+(y-y2)*(y-y2) < `Area)
+                    ||((x-x3)*(x-x3)+(y-y3)*(y-y3)<`Area)
+                    ||((x-x4)*(x-x4)+(y-y4)*(y-y4)<`Area)
+                    ||((x-x5)*(x-x5)+(y-y5)*(y-y5)<`Area)
+                    ||(length>5 && (x-x6)*(x-x6)+(y-y6)*(y-y6)<`Area)
+                    ||(length>6 && (x-x7)*(x-x7)+(y-y7)*(y-y7)<`Area)
+                    ||(length>7 && (x-x8)*(x-x8)+(y-y8)*(y-y8)<`Area)
+                    ||(length >8 && (x-x9)*(x-x9)+(y-y9)*(y-y9)<`Area)
+                    ||(length>9 && (x-x10)*(x-x10)+(y-y10)*(y-y10)<`Area)
+                    ||(length>10 && (x-x11)*(x-x11)+(y-y11)*(y-y11)<`Area)
+                    ||(length>11 && (x-x12)*(x-x12)+(y-y12)*(y-y12)<`Area)
+                    ||(length>12 && (x-x13)*(x-x13)+(y-y13)*(y-y13)<`Area)
+                    ||(length>13 && (x-x14)*(x-x14)+(y-y14)*(y-y14)<`Area)
+                    ||(length>14 && (x-x15)*(x-x15)+(y-y15)*(y-y15)<`Area)
+                    ||(length>15 && (x-x16)*(x-x16)+(y-y16)*(y-y16)<`Area)
+                    ||(length>16 && (x-x17)*(x-x17)+(y-y17)*(y-y17)<`Area)
+                    ||(length>17 && (x-x18)*(x-x18)+(y-y18)*(y-y18)<`Area)
+                    ||(length>18 && (x-x19)*(x-x19)+(y-y19)*(y-y19)<`Area)
+                    ||(length>19 && (x-x20)*(x-x20)+(y-y20)*(y-y20)<`Area))begin
+                        if(snake_color_ctrl)begin
+                            {color_r,color_g,color_b}<=6'b111111;
+                        end
+                        else begin
+                            {color_r,color_g,color_b}<=6'b001100;
+                        end
+                    end
+                    else if((x-food_x)*(x-food_x)+(y-food_y)*(y-food_y)<225)begin
+                        color_r<=2'b11;
+                        color_g<=2'b00;
+                        color_b<=2'b00;
+                    end
+                    //for score board so OP
+                    else if(x>150 && x <400&& y>220 && y<300)begin
+                        if(isFilled)begin
+                            color_r<=2'b00;
+                            color_g<=2'b00;
+                            color_b<=2'b11;
+                        end
+                        else begin
+                            color_r<=2'b11;
+                            color_g<=2'b11;
+                            color_b<=2'b11;
+                        end
+                    end
+                    //for obstacle
+                    else if( x > -2*`Space && x < 2*`Space && y > -2*`Space && y < 2*`Space )begin
+                            {color_r,color_g,color_b}<=6'b010101;
+                    end
+                    else if( x > -375 && x < 375 && y > -275 && y < 220 )begin
+                        color_r<=2'b00;
+                        color_g<=2'b00;
+                        color_b<=2'b00;
+                    end
+                    else begin
+                        color_r<=2'b11;
+                        color_g<=2'b11;
+                        color_b<=2'b11;
+                    end
+                end
+                `temp_GG:begin //draw the snake
                     if(((x-x1)*(x-x1)+(y-y1)*(y-y1)< `Area)
                     ||((x-x2)*(x-x2)+(y-y2)*(y-y2) < `Area)
                     ||((x-x3)*(x-x3)+(y-y3)*(y-y3)<`Area)
@@ -962,7 +1029,8 @@ always @(posedge CLK) begin
         .clk(CLK), // clock of the fpga (100MHz)
         .reset(RESET),
         .add(eaten), // score will add 1 in a clock cycle if (add==1)
-            .decr(dec),
+		.isDecresing(g_c_state==`temp_GG),
+            .decr(snake_clk),
             .gameover(gameover),
             .x_p(x_m), // 12-bit, in screen coordinate
             .y_p(y_m), // 12-bit, in screen coordinate
