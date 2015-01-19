@@ -523,39 +523,39 @@ always @(posedge CLK)begin
 always@(posedge CLK)begin
     if(RESET)begin
         wen<=0;
-        g_n_state=`IDLE;
+        g_n_state<=`IDLE;
     end
     else begin
     case(g_c_state)
         `INIT:begin
             wen<=1;
             if(refill_done)begin
-                g_n_state=`IDLE;
+                g_n_state<=`IDLE;
             end
             else begin
-                g_n_state=`INIT;
+                g_n_state<=`INIT;
             end
         end
         `IDLE:begin
             wen<=0;
             if(BTN_L || BTN_U || BTN_R || BTN_D )begin
-                g_n_state=`PLAY;
+                g_n_state<=`PLAY;
             end
-            else  g_n_state=`IDLE;
+            else  g_n_state<=`IDLE;
         end
         `PLAY:begin
             wen<=1;
-            if(gg) g_n_state=`temp_GG;
-            else g_n_state=`PLAY;
+            if(gg) g_n_state<=`temp_GG;
+            else g_n_state<=`PLAY;
         end
         `temp_GG:begin
             wen<=1;
-            if(gameover) g_n_state=`GG;
-            else g_n_state=`temp_GG;
+            if(gameover) g_n_state<=`GG;
+            else g_n_state<=`temp_GG;
         end
         `GG:begin
             wen<=1;
-            g_n_state=`GG;
+            g_n_state<=`GG;
         end
     endcase
 end
