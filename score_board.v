@@ -107,7 +107,7 @@ wire dout_mem;
 always@(posedge clk) begin
 	if(reset)
 		gameover<=1'b0;
-	else if (decr && (one_score||zero_score))
+	else if ((isDecresing&&decr) && (one_score||zero_score))
 		gameover<=1'b1;
 	else
 		gameover<=gameover;
